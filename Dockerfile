@@ -27,4 +27,6 @@ COPY ./package.json ./yarn.lock ./
 
 COPY --from=build /app/dist ./dist
 
+RUN yarn install --production
+
 CMD yarn start
