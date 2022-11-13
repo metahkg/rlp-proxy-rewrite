@@ -1,0 +1,53 @@
+{
+  "name": "@metahkg/rlp-proxy-rewrite",
+  "author": "wcyat",
+  "license": "MIT",
+  "scripts": {
+    "start": "node dist/index.js",
+    "build": "tsc",
+    "test": "exit 0",
+    "dev": "nodemon src/index.ts",
+    "docker": "cd docker && docker-compose up -d",
+    "docker:build": "docker build ."
+  },
+  "dependencies": {
+    "@fastify/cors": "^8.2.0",
+    "@fastify/rate-limit": "^7.5.0",
+    "@sinclair/typebox": "^0.25.8",
+    "agenda": "^5.0.0",
+    "ajv": "^8.11.0",
+    "ajv-formats": "^2.1.1",
+    "dotenv": "^16.0.3",
+    "fastify": "^4.9.2",
+    "metascraper": "^5.31.3",
+    "mongodb": "^4.11.0",
+    "puppeteer": "^19.2.2",
+    "puppeteer-extra": "^3.3.4",
+    "puppeteer-extra-plugin-adblocker": "^2.13.5",
+    "puppeteer-extra-plugin-stealth": "^2.11.1"
+  },
+  "devDependencies": {
+    "@types/metascraper-author": "^5.14.0",
+    "@types/metascraper-clearbit": "^5.14.1",
+    "@types/metascraper-date": "^5.14.0",
+    "@types/metascraper-description": "^5.14.1",
+    "@types/metascraper-image": "^5.14.0",
+    "@types/metascraper-logo": "^5.14.0",
+    "@types/metascraper-publisher": "^5.14.0",
+    "@types/metascraper-title": "^5.14.0",
+    "@types/metascraper-url": "^5.14.0",
+    "@types/node": "^18.11.9",
+    "metascraper-author": "^5.31.3",
+    "metascraper-clearbit": "^5.31.3",
+    "metascraper-date": "^5.31.3",
+    "metascraper-description": "^5.31.3",
+    "metascraper-image": "^5.31.3",
+    "metascraper-logo": "^5.31.3",
+    "metascraper-publisher": "^5.31.3",
+    "metascraper-title": "^5.31.3",
+    "metascraper-url": "^5.31.3",
+    "nodemon": "^2.0.20",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.4"
+  }
+}

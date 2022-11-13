@@ -1,0 +1,29 @@
+services:
+  rlp:
+    image: registry.gitlab.com/metahkg/rlp-proxy-rewrite:latest
+    container_name: rlp
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      PORT: ${PORT}
+      DB_URI: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@rlp-mongo:27017
+    restart: always
+    tty: true
+    networks:
+      - rlp
+    depends_on:
+      - rlp-mongo
+  rlp-mongo:
+    image: mongo:latest
+    container_name: rlp-mongo
+    restart: always
+    tty: true
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_INITDB_DATABASE: rlp
+    networks:
+      - rlp
+networks:
+  rlp:
+    driver: bridge
