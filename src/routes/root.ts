@@ -25,13 +25,16 @@ export default function (
         done
       ) {
         if (!req.query?.url) return done();
+        try {
+          req.query.url = decodeURIComponent(req.query.url);
+        } catch {}
         if (
           !["https://", "http://"].some((v) => req.query.url?.startsWith(v))
         ) {
           req.query.url = `https://${req.query.url}`;
         }
-        if (req.query.url.endsWith("/")) {
-          req.query.url = req.query.url.slice(0, -1);
+        if (req.query.url?.endsWith("/")) {
+          req.query.url = req.query.url?.slice(0, -1);
         }
         done();
       },

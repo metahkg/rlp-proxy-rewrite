@@ -48,13 +48,21 @@ const getContent = async (url: string): Promise<string | null> => {
       const html = await page.evaluate(
         () => document.querySelector("*").outerHTML
       );
-      await page.close().catch(() => {});
-      browser.disconnect();
+      setTimeout(async () => {
+        try {
+          await page.close().catch(() => {});
+          browser.disconnect();
+        } catch {}
+      });
       return html;
     } catch {
       try {
-        await page.close().catch(() => {});
-        browser.disconnect();
+        setTimeout(async () => {
+          try {
+            await page.close().catch(() => {});
+            browser.disconnect();
+          } catch {}
+        });
         return null;
       } catch {}
     }
