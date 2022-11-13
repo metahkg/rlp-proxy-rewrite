@@ -3,7 +3,8 @@ FROM node:alpine as puppeteer
 RUN apk add --no-cache \
   chromium \
   ca-certificates \
-  ffmpeg
+  ffmpeg \
+  python3
 
 # skip installing chrome
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
