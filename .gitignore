@@ -1,4 +1,5 @@
 /node_modules/
 /.lh/
+/dist
 yarn*.log
 .env
