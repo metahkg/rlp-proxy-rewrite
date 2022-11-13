@@ -10,7 +10,7 @@ WORKDIR /app
 
 FROM puppeteer as build
 
-COPY ./package.json ./yarn.lock ./src ./
+COPY ./package.json ./yarn.lock ./tsconfig.json ./src ./
 
 RUN yarn install
 
