@@ -6,14 +6,18 @@ Written from scratch to reimplement [rlp-proxy](https://github.com/Dhaiwat10/rlp
 
 ## Features
 
-- this proxy is based on puppeteer, therefore it is able to work with most urls, including react apps such as
+- this proxy is based on puppeteer, therefore it is able to work with most sites, including react apps such as
   [metahkg.org](https://metahkg.org).
 - more sites can be accessed with [puppeteer-extra-plugin-stealth](https://www.npmjs.com/package/puppeteer-extra-plugin-stealth).
+- uses fastify (instead of express)
+- caching with mongodb, also caches null metadata
+- auto delete successful caches after 30 days, null caches after 1 day
 - 5 seconds timeout
 
 ## Other information
 
-- *Warning*: A bit slower
+- *Warning*: A bit slower since it uses puppeteer
+- DOES NOT give an error code when the site is not found / the site gives out any errors, simply returns `{ metadata: null }`
 - manifest support not yet available, as [metascraper-manifest](https://www.npmjs.com/package/metascraper-manifest) does not have types.
 
 ## Requirements
