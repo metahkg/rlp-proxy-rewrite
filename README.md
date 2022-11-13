@@ -21,8 +21,8 @@ Written from scratch to reimplement [rlp-proxy](https://github.com/Dhaiwat10/rlp
 
 ## Other information
 
-- rate limit: 150 requests per minute
-- *Warning*: A bit slower since it uses puppeteer
+- rate limit: 100 requests per minute
+- *Warning*: slower since it uses puppeteer
 - manifest support not yet available, as [metascraper-manifest](https://www.npmjs.com/package/metascraper-manifest) does not have types.
 
 ## Requirements

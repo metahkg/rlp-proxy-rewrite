@@ -1,5 +1,8 @@
 import puppeteer from "puppeteer-extra";
-import { DEFAULT_INTERCEPT_RESOLUTION_PRIORITY, executablePath } from "puppeteer";
+import {
+  DEFAULT_INTERCEPT_RESOLUTION_PRIORITY,
+  executablePath,
+} from "puppeteer";
 import AdblockerPlugin from "puppeteer-extra-plugin-adblocker";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import metaScraperAuthor from "metascraper-author";
@@ -21,37 +24,40 @@ puppeteer.use(
 );
 puppeteer.use(StealthPlugin());
 
-let browserWSEndpoint: string;
+let browserUrl: string;
 
 const getContent = async (url: string): Promise<string | null> => {
-  const browser = await puppeteer.launch({
-    headless: true,
-    executablePath: executablePath(),
-    args: ["--no-sandbox"],
-    ...(browserWSEndpoint && { browserWSEndpoint }),
-  });
-  browserWSEndpoint = browser.wsEndpoint();
-  const page = await browser.newPage();
+  const browser = browserUrl
+    ? await puppeteer.connect({
+        browserURL: browserUrl,
+        defaultViewport: null,
+      })
+    : await puppeteer.launch({
+        headless: true,
+        executablePath: executablePath(),
+        args: ["--no-sandbox"],
+      });
+  const page = (await browser.pages())[0];
+
+  if (!browserUrl) browserUrl = browser.target().url();
+
   try {
-    const html: string = await new Promise(async (resolve, reject) => {
-      setTimeout(() => {
-        reject("timeout");
-      }, 5000);
+    await page.goto(url, { waitUntil: "networkidle0", timeout: 5000 });
+  } finally {
+    try {
+      const html = await page.evaluate(
+        () => document.querySelector("*").outerHTML
+      );
+      await page.close().catch(() => {});
+      browser.disconnect();
+      return html;
+    } catch {
       try {
-        await page.goto(url, { waitUntil: "networkidle0" });
-        const data = await page.evaluate(
-          () => document.querySelector("*").outerHTML
-        );
-        await page.close();
+        await page.close().catch(() => {});
         browser.disconnect();
-        resolve(data);
-      } catch (err) {
-        reject("error");
-      }
-    });
-    return html;
-  } catch (err) {
-    return null;
+        return null;
+      } catch {}
+    }
   }
 };
 
