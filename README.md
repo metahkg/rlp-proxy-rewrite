@@ -14,10 +14,15 @@ Written from scratch to reimplement [rlp-proxy](https://github.com/Dhaiwat10/rlp
 - auto delete successful caches after 30 days, null caches after 1 day
 - 5 seconds timeout
 
+## Compatibility
+
+- `/v2` is almost completely compatible with the original `rlp-proxy`, however it DOES NOT give an error code when the site is not found / the site gives out any errors, simply returns `{ metadata: null }`
+- this proxy does not support v1, `/` is an alias of `/v2`
+
 ## Other information
 
+- rate limit: 150 requests per minute
 - *Warning*: A bit slower since it uses puppeteer
-- DOES NOT give an error code when the site is not found / the site gives out any errors, simply returns `{ metadata: null }`
 - manifest support not yet available, as [metascraper-manifest](https://www.npmjs.com/package/metascraper-manifest) does not have types.
 
 ## Requirements
