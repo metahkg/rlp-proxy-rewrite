@@ -32,12 +32,12 @@ docker-build:
     - docker push "${CI_REGISTRY_IMAGE}/${CI_COMMIT_BRANCH}:latest"
     - docker push "${CI_REGISTRY_IMAGE}/${CI_COMMIT_BRANCH}:${CI_COMMIT_SHORT_SHA}"
     - docker push "${CI_REGISTRY_IMAGE}/${CI_COMMIT_BRANCH}:${version}"
-    - if [ "$CI_COMMIT_BRANCH" = "master" ]; then docker build --pull 
+    - if [ "$CI_COMMIT_BRANCH" = "master" ]; then docker build --pull
      -t "${CI_REGISTRY_IMAGE}:latest"
      -t "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}"
      -t "${CI_REGISTRY_IMAGE}:${version}" .;
      docker push "${CI_REGISTRY_IMAGE}:latest";
-     docker push "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}"
+     docker push "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}";
      docker push "${CI_REGISTRY_IMAGE}:${version}"; fi;
   rules:
     - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "dev"
