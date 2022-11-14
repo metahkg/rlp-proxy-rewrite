@@ -1,5 +1,5 @@
-/node_modules/
-/.lh/
-/dist
+node_modules/
+.lh/
+dist
 yarn*.log
 .env

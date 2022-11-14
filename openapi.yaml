@@ -1,0 +1,125 @@
+openapi: 3.0.0
+
+info:
+  version: 1.0.0
+  title: RLP proxy (rewrite) api
+  description: "# RLP proxy (rewrite)
+    Proxy for [react-link-preview](https://github.com/dhaiwat10/react-link-preview).
+
+    Written from scratch to reimplement [rlp-proxy](https://github.com/Dhaiwat10/rlp-proxy), which is all rights reserved.
+
+    ## Features
+
+    - this proxy is based on puppeteer, therefore it is able to work with most sites, including react apps such as
+    [metahkg.org](https://metahkg.org).
+    - more sites can be accessed with [puppeteer-extra-plugin-stealth](https://www.npmjs.com/package/puppeteer-extra-plugin-stealth).
+    - uses fastify (instead of express)
+    - caching with mongodb, also caches null metadata
+    - auto delete successful caches after 30 days, null caches after 1 day
+    - 5 seconds timeout
+
+    ## Compatibility
+
+    - `/v2` is highly compatible with the original `rlp-proxy`, however it DOES NOT give an error code when the site is not found / the site gives out any errors, simply returns `{ metadata: null }`
+    - the querystring `url` should be UTF-8 encoded, or some urls may not be supported
+    - this proxy does not support v1, `/` is an alias of `/v2`
+
+    ## Other information
+
+    - rate limit: 100 requests per 30 seconds
+    - *Warning*: slower since it uses puppeteer
+    - manifest support not yet available, as [metascraper-manifest](https://www.npmjs.com/package/metascraper-manifest) does not have types."
+  contact:
+    email: wcyat@wcyat.me
+  license:
+    name: MIT
+    url: https://gitlab.com/metahkg/rlp-proxy-rewrite/-/blob/dev/LICENSE
+
+servers:
+  - url: https://rlp.metahkg.org
+  - url: https://rlp-dev.metahkg.org
+
+paths:
+  /:
+    get:
+      operationId: getMetadata
+      summary: Get metadata of a url
+      description: Get metadata of a url. [Source](https://gitlab.com/rlp-proxy-rewrite/-/blob/dev/src/routes/root.ts)
+      parameters:
+        - $ref: "#/components/parameters/url"
+      responses:
+        "200":
+          $ref: "#/components/responses/metadata"
+  /v2:
+    get:
+      operationId: getMetadataV2
+      summary: Alias of `getMetadata`
+      description: Alias of `getMetadata`
+      parameters:
+        - $ref: "#/components/parameters/url"
+      responses:
+        "200":
+          $ref: "#/components/responses/metadata"
+
+components:
+  parameters:
+    url:
+      in: query
+      name: url
+      required: true
+      description: The requested url (must be a valid https/http URL), UTF-8 encoded, see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent
+      schema:
+        type: string
+        format: uri
+        description: must be a valid https/http URL, UTF-8 encoded
+  responses:
+    metadata:
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - metadata
+            additionalProperties: false
+            properties:
+              metadata:
+                $ref: "#/components/schemas/Metadata"
+  schemas:
+    Metadata:
+      type: object
+      nullable: true
+      additionalProperties: false
+      required:
+        - title
+        - description
+        - image
+        - siteName
+        - hostname
+      properties:
+        title:
+          type: string
+          nullable: true
+          description: title of the site
+          example: Metahkg
+        description:
+          type: string
+          nullable: true
+          description: description of the site
+          example: Metahkg is a free and open source lihkg-style forum
+        image:
+          type: string
+          format: uri
+          nullable: true
+          description: image url of the site
+          example: https://metahkg.org/images/logo.png
+        siteName:
+          type: string
+          nullable: true
+          description: site name of the site
+          example: Metahkg forum
+        hostname:
+          type: string
+          nullable: true
+          description: hostname of the site (e.g. `metahkg.org`)
+          example: metahkg.org

@@ -1,6 +1,6 @@
 FROM node:alpine as puppeteer
 
-RUN apk add --no-cache chromium ca-certificates ffmpeg python3 make g++
+RUN apk add --no-cache chromium ca-certificates ffmpeg
 
 # skip installing chrome
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
@@ -10,7 +10,7 @@ WORKDIR /app
 
 FROM puppeteer as build
 
-WORKDIR /app
+RUN apk add --no-cache python3 make g++
 
 COPY ./package.json ./yarn.lock ./tsconfig.json ./
 COPY ./src ./src
@@ -19,6 +19,8 @@ RUN yarn install
 
 RUN yarn build
 
+RUN yarn install --production
+
 FROM puppeteer
 
 WORKDIR /app
@@ -26,7 +28,6 @@ WORKDIR /app
 COPY ./package.json ./yarn.lock ./
 
 COPY --from=build /app/dist ./dist
-
-RUN yarn install --production
+COPY --from=build /app/node_modules ./node_modules
 
 CMD yarn start

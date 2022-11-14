@@ -16,12 +16,13 @@ Written from scratch to reimplement [rlp-proxy](https://github.com/Dhaiwat10/rlp
 
 ## Compatibility
 
-- `/v2` is almost completely compatible with the original `rlp-proxy`, however it DOES NOT give an error code when the site is not found / the site gives out any errors, simply returns `{ metadata: null }`
+- `/v2` is highly compatible with the original `rlp-proxy`, however it DOES NOT give an error code when the site is not found / the site gives out any errors, simply returns `{ metadata: null }`
+- the querystring `url` should be UTF-8 encoded, or some urls may not be supported
 - this proxy does not support v1, `/` is an alias of `/v2`
 
 ## Other information
 
-- rate limit: 300 requests per minute
+- rate limit: 100 requests per 30 seconds
 - *Warning*: slower since it uses puppeteer
 - manifest support not yet available, as [metascraper-manifest](https://www.npmjs.com/package/metascraper-manifest) does not have types.
 

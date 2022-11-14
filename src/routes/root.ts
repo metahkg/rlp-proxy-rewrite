@@ -10,10 +10,10 @@ export default function (
   _opts: FastifyPluginOptions,
   done: (err?: Error) => void
 ) {
+  const urlRegex =
+    /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/;
   const querySchema = Type.Object({
-    url: Type.RegEx(
-      /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/
-    ),
+    url: Type.RegEx(urlRegex),
   });
   fastify.get(
     "/",
