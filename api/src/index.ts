@@ -89,6 +89,30 @@ export class Client {
       let resultData200 = _responseText;
       result200 = JSON.parse(resultData200);
       return Promise.resolve<Anonymous>(result200);
+    } else if (status === 400) {
+      const _responseText = response.data;
+      let result400: any = null;
+      let resultData400 = _responseText;
+      result400 = JSON.parse(resultData400);
+      return throwException(
+        "Bad request",
+        status,
+        _responseText,
+        _headers,
+        result400
+      );
+    } else if (status === 429) {
+      const _responseText = response.data;
+      let result429: any = null;
+      let resultData429 = _responseText;
+      result429 = JSON.parse(resultData429);
+      return throwException(
+        "Rate limit exceeded",
+        status,
+        _responseText,
+        _headers,
+        result429
+      );
     } else if (status !== 200 && status !== 204) {
       const _responseText = response.data;
       return throwException(
@@ -157,6 +181,30 @@ export class Client {
       let resultData200 = _responseText;
       result200 = JSON.parse(resultData200);
       return Promise.resolve<Anonymous>(result200);
+    } else if (status === 400) {
+      const _responseText = response.data;
+      let result400: any = null;
+      let resultData400 = _responseText;
+      result400 = JSON.parse(resultData400);
+      return throwException(
+        "Bad request",
+        status,
+        _responseText,
+        _headers,
+        result400
+      );
+    } else if (status === 429) {
+      const _responseText = response.data;
+      let result429: any = null;
+      let resultData429 = _responseText;
+      result429 = JSON.parse(resultData429);
+      return throwException(
+        "Rate limit exceeded",
+        status,
+        _responseText,
+        _headers,
+        result429
+      );
     } else if (status !== 200 && status !== 204) {
       const _responseText = response.data;
       return throwException(
@@ -181,6 +229,15 @@ export interface Metadata {
   siteName: string | null;
   /** hostname of the site (e.g. `metahkg.org`) */
   hostname: string | null;
+}
+
+export interface ErrorDto {
+  /** http status code */
+  statusCode: number;
+  /** error message */
+  error: string;
+  /** detailed error message */
+  message?: string;
 }
 
 export interface Anonymous {
