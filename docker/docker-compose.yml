@@ -1,6 +1,9 @@
 services:
   rlp:
     image: registry.gitlab.com/metahkg/rlp-proxy-rewrite:latest
+    build:
+      context: ../
+      dockerfile: ./Dockerfile
     container_name: rlp
     ports:
       - ${PORT}:${PORT}
