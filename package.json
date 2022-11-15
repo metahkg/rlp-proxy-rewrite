@@ -10,7 +10,9 @@
     "dev": "nodemon src/index.ts",
     "lint": "prettier --write src/**/* api/src/**/*",
     "docker": "cd docker && docker-compose pull && docker-compose up -d",
-    "docker:build": "docker build ."
+    "docker:source": "cd docker && docker-compose up -d --build",
+    "docker:down": "cd docker && docker-compose down",
+    "docker:build": "cd docker && docker-compose build"
   },
   "dependencies": {
     "@fastify/cors": "^8.2.0",

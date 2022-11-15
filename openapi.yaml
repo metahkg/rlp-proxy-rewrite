@@ -50,6 +50,10 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/metadata"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   /v2:
     get:
       operationId: getMetadataV2
@@ -60,6 +64,10 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/metadata"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
 
 components:
   parameters:
@@ -85,6 +93,18 @@ components:
             properties:
               metadata:
                 $ref: "#/components/schemas/Metadata"
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    TooManyRequests:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
   schemas:
     Metadata:
       type: object
@@ -123,3 +143,20 @@ components:
           nullable: true
           description: hostname of the site (e.g. `metahkg.org`)
           example: metahkg.org
+    Error:
+      type: object
+      required:
+        - statusCode
+        - error
+      additionalProperties: false
+      properties:
+        statusCode:
+          type: number
+          format: int64
+          description: http status code
+        error:
+          type: string
+          description: error message
+        message:
+          type: string
+          description: detailed error message
