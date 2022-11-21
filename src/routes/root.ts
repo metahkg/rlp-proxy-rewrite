@@ -19,6 +19,31 @@ export default function (
     "/",
     {
       schema: { querystring: querySchema },
+      config: {
+        rateLimit: {
+          max: (
+            _req: FastifyRequest<{ Querystring: Static<typeof querySchema> }>,
+            key: string
+          ) => {
+            if (key?.startsWith?.("new")) {
+              return 10;
+            } else {
+              return 300;
+            }
+          },
+          keyGenerator: async (
+            req: FastifyRequest<{ Querystring: Static<typeof querySchema> }>
+          ) => {
+            const { url } = req.query;
+            return (await cacheCl.findOne(
+              { url },
+              { projection: { _id: 0, metadata: 0 } }
+            ))
+              ? req.ip
+              : `new${req.ip}`;
+          },
+        },
+      },
       preValidation: function (
         req: FastifyRequest<{ Querystring: Static<typeof querySchema> }>,
         _res,
