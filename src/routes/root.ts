@@ -28,7 +28,7 @@ export default function (
             if (key?.startsWith?.("new")) {
               return 10;
             } else {
-              return 300;
+              return 1000;
             }
           },
           keyGenerator: async (

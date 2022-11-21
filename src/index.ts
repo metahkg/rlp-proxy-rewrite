@@ -29,7 +29,7 @@ async function build() {
   await fastify.register(fastifyCors);
   await fastify.register(fastifyRateLimit, {
     global: true,
-    max: 300,
+    max: 1000,
     ban: 50,
     timeWindow: 1000 * 30,
   });
