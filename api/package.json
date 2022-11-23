@@ -1,6 +1,6 @@
 {
     "name": "@metahkg/rlp-proxy-rewrite-api",
-    "version": "1.0.2",
+    "version": "5.7.0",
     "main": "dist/index.js",
     "repository": "https://gitlab.com/metahkg/rlp-proxy-rewrite",
     "author": "wcyat",
