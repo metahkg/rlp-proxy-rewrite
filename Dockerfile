@@ -13,9 +13,9 @@ FROM puppeteer as build
 RUN apk add --no-cache python3 make g++
 
 COPY ./package.json ./yarn.lock ./tsconfig.json ./
-COPY ./src ./src
-
 RUN yarn install
+
+COPY ./src ./src
 
 RUN yarn build
 

@@ -11,6 +11,8 @@
     "lint": "prettier --write src/**/* api/src/**/*",
     "docker": "cd docker && docker-compose pull && docker-compose up -d",
     "docker:source": "cd docker && docker-compose up -d --build",
+    "docker:vpn": "cd docker && docker-compose -f docker-compose.vpn.yml up -d",
+    "docker:vpn:source": "cd docker && docker-compose -f docker-compose.vpn.yml up -d --build",
     "docker:down": "cd docker && docker-compose down",
     "docker:build": "cd docker && docker-compose build"
   },
