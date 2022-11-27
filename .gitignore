@@ -4,3 +4,4 @@ dist
 yarn*.log
 .env
 gl*.json
+docker/data/
