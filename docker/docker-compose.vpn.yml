@@ -44,6 +44,8 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
       MONGO_INITDB_DATABASE: rlp
     network_mode: service:protonvpn
+    volumes:
+      - ./data:/data/db
 networks:
   internet:
   proxy:

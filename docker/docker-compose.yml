@@ -24,6 +24,8 @@ services:
       MONGO_INITDB_DATABASE: rlp
     networks:
       - rlp
+    volumes:
+      - ./data:/data/db
 networks:
   rlp:
     driver: bridge
