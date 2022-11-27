@@ -4,6 +4,7 @@ import { cacheCl } from "../lib/mongodb";
 import { APIResponse } from "../types/ApiResponse";
 import metadataScraper from "../lib/scraper";
 import { Cache } from "../types/cache";
+import { RateLimitOptions } from "@fastify/rate-limit";
 
 export default function (
   fastify: FastifyInstance,
@@ -20,7 +21,8 @@ export default function (
     {
       schema: { querystring: querySchema },
       config: {
-        rateLimit: {
+        rateLimit: <RateLimitOptions>{
+          hook: "preHandler",
           max: (
             _req: FastifyRequest<{ Querystring: Static<typeof querySchema> }>,
             key: string
@@ -28,7 +30,7 @@ export default function (
             if (key?.startsWith?.("new")) {
               return 10;
             } else {
-              return 300;
+              return 1000;
             }
           },
           keyGenerator: async (
