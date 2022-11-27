@@ -1,0 +1,244 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:9170b36b-9aab-4b14-ae9b-8c92fe70e2f4",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2022-11-15T10:08:54Z",
+    "tools": [
+      {
+        "vendor": "GitLab",
+        "name": "Gemnasium",
+        "version": "3.10.6"
+      }
+    ],
+    "authors": [
+      {
+        "name": "GitLab",
+        "email": "support@gitlab.com"
+      }
+    ],
+    "properties": [
+      {
+        "name": "gitlab:input_file",
+        "value": "api/yarn.lock"
+      },
+      {
+        "name": "gitlab:package_manager",
+        "value": "yarn"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "@cspotcode/source-map-support",
+      "version": "0.8.1",
+      "purl": "pkg:npm/@cspotcode/source-map-support@0.8.1",
+      "type": "library",
+      "bom-ref": "pkg:npm/@cspotcode/source-map-support@0.8.1"
+    },
+    {
+      "name": "@jridgewell/resolve-uri",
+      "version": "3.1.0",
+      "purl": "pkg:npm/@jridgewell/resolve-uri@3.1.0",
+      "type": "library",
+      "bom-ref": "pkg:npm/@jridgewell/resolve-uri@3.1.0"
+    },
+    {
+      "name": "@jridgewell/sourcemap-codec",
+      "version": "1.4.14",
+      "purl": "pkg:npm/@jridgewell/sourcemap-codec@1.4.14",
+      "type": "library",
+      "bom-ref": "pkg:npm/@jridgewell/sourcemap-codec@1.4.14"
+    },
+    {
+      "name": "@jridgewell/trace-mapping",
+      "version": "0.3.9",
+      "purl": "pkg:npm/@jridgewell/trace-mapping@0.3.9",
+      "type": "library",
+      "bom-ref": "pkg:npm/@jridgewell/trace-mapping@0.3.9"
+    },
+    {
+      "name": "@tsconfig/node10",
+      "version": "1.0.9",
+      "purl": "pkg:npm/@tsconfig/node10@1.0.9",
+      "type": "library",
+      "bom-ref": "pkg:npm/@tsconfig/node10@1.0.9"
+    },
+    {
+      "name": "@tsconfig/node12",
+      "version": "1.0.11",
+      "purl": "pkg:npm/@tsconfig/node12@1.0.11",
+      "type": "library",
+      "bom-ref": "pkg:npm/@tsconfig/node12@1.0.11"
+    },
+    {
+      "name": "@tsconfig/node14",
+      "version": "1.0.3",
+      "purl": "pkg:npm/@tsconfig/node14@1.0.3",
+      "type": "library",
+      "bom-ref": "pkg:npm/@tsconfig/node14@1.0.3"
+    },
+    {
+      "name": "@tsconfig/node16",
+      "version": "1.0.3",
+      "purl": "pkg:npm/@tsconfig/node16@1.0.3",
+      "type": "library",
+      "bom-ref": "pkg:npm/@tsconfig/node16@1.0.3"
+    },
+    {
+      "name": "@types/node",
+      "version": "18.11.9",
+      "purl": "pkg:npm/@types/node@18.11.9",
+      "type": "library",
+      "bom-ref": "pkg:npm/@types/node@18.11.9"
+    },
+    {
+      "name": "acorn",
+      "version": "8.8.1",
+      "purl": "pkg:npm/acorn@8.8.1",
+      "type": "library",
+      "bom-ref": "pkg:npm/acorn@8.8.1"
+    },
+    {
+      "name": "acorn-walk",
+      "version": "8.2.0",
+      "purl": "pkg:npm/acorn-walk@8.2.0",
+      "type": "library",
+      "bom-ref": "pkg:npm/acorn-walk@8.2.0"
+    },
+    {
+      "name": "arg",
+      "version": "4.1.3",
+      "purl": "pkg:npm/arg@4.1.3",
+      "type": "library",
+      "bom-ref": "pkg:npm/arg@4.1.3"
+    },
+    {
+      "name": "asynckit",
+      "version": "0.4.0",
+      "purl": "pkg:npm/asynckit@0.4.0",
+      "type": "library",
+      "bom-ref": "pkg:npm/asynckit@0.4.0"
+    },
+    {
+      "name": "axios",
+      "version": "1.1.3",
+      "purl": "pkg:npm/axios@1.1.3",
+      "type": "library",
+      "bom-ref": "pkg:npm/axios@1.1.3"
+    },
+    {
+      "name": "combined-stream",
+      "version": "1.0.8",
+      "purl": "pkg:npm/combined-stream@1.0.8",
+      "type": "library",
+      "bom-ref": "pkg:npm/combined-stream@1.0.8"
+    },
+    {
+      "name": "create-require",
+      "version": "1.1.1",
+      "purl": "pkg:npm/create-require@1.1.1",
+      "type": "library",
+      "bom-ref": "pkg:npm/create-require@1.1.1"
+    },
+    {
+      "name": "delayed-stream",
+      "version": "1.0.0",
+      "purl": "pkg:npm/delayed-stream@1.0.0",
+      "type": "library",
+      "bom-ref": "pkg:npm/delayed-stream@1.0.0"
+    },
+    {
+      "name": "diff",
+      "version": "4.0.2",
+      "purl": "pkg:npm/diff@4.0.2",
+      "type": "library",
+      "bom-ref": "pkg:npm/diff@4.0.2"
+    },
+    {
+      "name": "follow-redirects",
+      "version": "1.15.2",
+      "purl": "pkg:npm/follow-redirects@1.15.2",
+      "type": "library",
+      "bom-ref": "pkg:npm/follow-redirects@1.15.2"
+    },
+    {
+      "name": "form-data",
+      "version": "4.0.0",
+      "purl": "pkg:npm/form-data@4.0.0",
+      "type": "library",
+      "bom-ref": "pkg:npm/form-data@4.0.0"
+    },
+    {
+      "name": "make-error",
+      "version": "1.3.6",
+      "purl": "pkg:npm/make-error@1.3.6",
+      "type": "library",
+      "bom-ref": "pkg:npm/make-error@1.3.6"
+    },
+    {
+      "name": "mime-db",
+      "version": "1.52.0",
+      "purl": "pkg:npm/mime-db@1.52.0",
+      "type": "library",
+      "bom-ref": "pkg:npm/mime-db@1.52.0"
+    },
+    {
+      "name": "mime-types",
+      "version": "2.1.35",
+      "purl": "pkg:npm/mime-types@2.1.35",
+      "type": "library",
+      "bom-ref": "pkg:npm/mime-types@2.1.35"
+    },
+    {
+      "name": "nswag",
+      "version": "13.17.0",
+      "purl": "pkg:npm/nswag@13.17.0",
+      "type": "library",
+      "bom-ref": "pkg:npm/nswag@13.17.0"
+    },
+    {
+      "name": "prettier",
+      "version": "2.7.1",
+      "purl": "pkg:npm/prettier@2.7.1",
+      "type": "library",
+      "bom-ref": "pkg:npm/prettier@2.7.1"
+    },
+    {
+      "name": "proxy-from-env",
+      "version": "1.1.0",
+      "purl": "pkg:npm/proxy-from-env@1.1.0",
+      "type": "library",
+      "bom-ref": "pkg:npm/proxy-from-env@1.1.0"
+    },
+    {
+      "name": "ts-node",
+      "version": "10.9.1",
+      "purl": "pkg:npm/ts-node@10.9.1",
+      "type": "library",
+      "bom-ref": "pkg:npm/ts-node@10.9.1"
+    },
+    {
+      "name": "typescript",
+      "version": "4.8.4",
+      "purl": "pkg:npm/typescript@4.8.4",
+      "type": "library",
+      "bom-ref": "pkg:npm/typescript@4.8.4"
+    },
+    {
+      "name": "v8-compile-cache-lib",
+      "version": "3.0.1",
+      "purl": "pkg:npm/v8-compile-cache-lib@3.0.1",
+      "type": "library",
+      "bom-ref": "pkg:npm/v8-compile-cache-lib@3.0.1"
+    },
+    {
+      "name": "yn",
+      "version": "3.1.1",
+      "purl": "pkg:npm/yn@3.1.1",
+      "type": "library",
+      "bom-ref": "pkg:npm/yn@3.1.1"
+    }
+  ]
+}
