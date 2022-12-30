@@ -96,16 +96,16 @@ update-api:
     - yarn install
     - yarn generate
     - git add -A
-    - git commit -a -m "api - update from latest openapi" || echo "nothing to commit, skipping"
+    - git commit -a -m "api - update from latest openapi" || (echo "nothing to commit, skipping" && exit 0)
     - git push origin $CI_COMMIT_BRANCH
   artifacts:
     paths:
       - api/dist
-  rules:
-    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "dev"
-      changes:
-        - openapi.yaml
-    - if: $UPDATE == "true"
+  # rules:
+  #  - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "dev"
+  #    changes:
+  #      - openapi.yaml
+  #  - if: $UPDATE == "true"
 
 tagging:
   image: node:18-alpine
