@@ -2,6 +2,7 @@ stages:
   - lint
   - test
   - build
+  - update
   - deploy
   - review
   - dast
@@ -14,7 +15,6 @@ stages:
   - incremental rollout 100%
   - performance
   - cleanup
-  - update
 
 docker-build:
   image: docker:latest
