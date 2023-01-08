@@ -2,6 +2,7 @@ stages:
   - lint
   - test
   - build
+  - update
   - deploy
   - review
   - dast
@@ -14,7 +15,6 @@ stages:
   - incremental rollout 100%
   - performance
   - cleanup
-  - update
 
 docker-build:
   image: docker:latest
@@ -64,24 +64,6 @@ lint:
       when: never
     - if: $CI_COMMIT_AUTHOR != "metahkg-bot <bot@metahkg.org>"
 
-tagging:
-  image: node:18-alpine
-  stage: deploy
-  allow_failure: true
-  before_script:
-    - apk add git
-  script:
-    - git config --global user.name metahkg-bot
-    - git config --global user.email bot@metahkg.org
-    - tag=$(node -e "console.log(require('./package.json').version)")
-    - if [ $CI_COMMIT_BRANCH = "dev" ]; then tag=${tag}-dev; fi;
-    - git tag "$tag"
-    - git push https://root:$gitlab_token@$CI_SERVER_HOST/$CI_PROJECT_PATH.git $tag
-  rules:
-    - if: $CI_COMMIT_TAG
-      when: never
-    - if: $CI_COMMIT_AUTHOR != "metahkg-bot <bot@metahkg.org>" && ($CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "master")
-
 container_scanning:
   stage: review
   needs: [ "docker-build" ]
@@ -114,16 +96,38 @@ update-api:
     - yarn install
     - yarn generate
     - git add -A
-    - git commit -a -m "api - update from latest openapi" || echo "nothing to commit, skipping"
+    - git commit -a -m "api - update from latest openapi" || (echo "nothing to commit, skipping" && exit 0)
     - git push origin $CI_COMMIT_BRANCH
   artifacts:
     paths:
       - api/dist
+  # rules:
+  #  - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "dev"
+  #    changes:
+  #      - openapi.yaml
+  #  - if: $UPDATE == "true"
+
+tagging:
+  image: node:18-alpine
+  stage: deploy
+  needs: ["update-api"]
+  allow_failure: true
+  before_script:
+    - apk add git
+    - git config --global user.name metahkg-bot
+    - git config --global user.email bot@metahkg.org
+    - git remote set-url origin https://root:$gitlab_token@$CI_SERVER_HOST/$CI_PROJECT_PATH.git || git remote add origin https://root:$gitlab_token@$CI_SERVER_HOST/$CI_PROJECT_PATH.git
+    - git checkout $CI_COMMIT_BRANCH
+    - git pull origin $CI_COMMIT_BRANCH
+  script:
+    - tag=$(node -e "console.log(require('./package.json').version)")
+    - if [ $CI_COMMIT_BRANCH = "dev" ]; then tag=${tag}-dev; fi;
+    - git tag "$tag"
+    - git push origin $tag
   rules:
-    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "dev"
-      changes:
-        - openapi.yaml
-    - if: $UPDATE == "true"
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_COMMIT_AUTHOR != "metahkg-bot <bot@metahkg.org>" && ($CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "master")
 
 publish-api:
   image: node:latest
