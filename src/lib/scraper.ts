@@ -29,7 +29,7 @@ let browser: Browser;
 
 export async function initBrowser() {
   browser = await puppeteer.launch({
-    headless: JSON.parse(process.env.NO_HEADLESS) ? false : true,
+    headless: JSON.parse(process.env.NO_HEADLESS || "false") ? false : true,
     executablePath: executablePath(),
     args: ["--no-sandbox"],
   });
