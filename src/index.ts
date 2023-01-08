@@ -6,12 +6,14 @@ import routes from "./routes";
 import dotenv from "dotenv";
 import { client } from "./lib/mongodb";
 import { agenda } from "./lib/agenda";
+import { initBrowser } from "./lib/scraper";
 
 dotenv.config();
 
 async function build() {
   await client.connect();
   await agenda.start();
+  await initBrowser();
 
   ["removeOldNullCache", "removeOldCache"].forEach(async (name) => {
     if (!(await agenda.jobs({ name })).length) {
