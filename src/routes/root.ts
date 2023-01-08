@@ -28,7 +28,7 @@ export default function (
             key: string
           ) => {
             if (key?.startsWith?.("new")) {
-              return 10;
+              return 5;
             } else {
               return 1000;
             }
