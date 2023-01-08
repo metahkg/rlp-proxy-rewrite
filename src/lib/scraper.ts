@@ -38,11 +38,7 @@ export async function initBrowser() {
 async function getContent(url: string): Promise<string | null> {
   // if browser crashed / closed
   if (!browser) {
-    browser = await puppeteer.launch({
-      headless: JSON.parse(process.env.NO_HEADLESS) ? false : true,
-      executablePath: executablePath(),
-      args: ["--no-sandbox"],
-    });
+    await initBrowser();
   }
 
   while ((await browser.pages()).length > 20) {
