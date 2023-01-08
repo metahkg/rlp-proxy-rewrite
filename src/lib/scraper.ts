@@ -1,5 +1,6 @@
 import puppeteer from "puppeteer-extra";
 import {
+  Browser,
   DEFAULT_INTERCEPT_RESOLUTION_PRIORITY,
   executablePath,
 } from "puppeteer";
@@ -24,25 +25,34 @@ puppeteer.use(
 );
 puppeteer.use(StealthPlugin());
 
-let browserUrl: string;
+let browser: Browser;
 
-const getContent = async (url: string): Promise<string | null> => {
-  const browser = browserUrl
-    ? await puppeteer.connect({
-        browserURL: browserUrl,
-        defaultViewport: null,
-      })
-    : await puppeteer.launch({
-        headless: true,
-        executablePath: executablePath(),
-        args: ["--no-sandbox"],
-      });
-  const page = (await browser.pages())[0];
+export async function initBrowser() {
+  browser = await puppeteer.launch({
+    headless: JSON.parse(process.env.NO_HEADLESS) ? false : true,
+    executablePath: executablePath(),
+    args: ["--no-sandbox"],
+  });
+}
 
-  if (!browserUrl) browserUrl = browser.target().url();
+async function getContent(url: string): Promise<string | null> {
+  // if browser crashed / closed
+  if (!browser) {
+    browser = await puppeteer.launch({
+      headless: JSON.parse(process.env.NO_HEADLESS) ? false : true,
+      executablePath: executablePath(),
+      args: ["--no-sandbox"],
+    });
+  }
+
+  while ((await browser.pages()).length > 20) {
+    await new Promise((resolve) => setTimeout(resolve, 200));
+  }
+
+  const page = await browser.newPage();
 
   try {
-    await page.goto(url, { waitUntil: "networkidle0", timeout: 5000 });
+    await page.goto(url, { waitUntil: "networkidle0", timeout: 4000 });
   } finally {
     try {
       const html = await page.evaluate(
@@ -51,7 +61,6 @@ const getContent = async (url: string): Promise<string | null> => {
       setTimeout(async () => {
         try {
           await page.close().catch(() => {});
-          browser.disconnect();
         } catch {}
       });
       return html;
@@ -60,14 +69,13 @@ const getContent = async (url: string): Promise<string | null> => {
         setTimeout(async () => {
           try {
             await page.close().catch(() => {});
-            browser.disconnect();
           } catch {}
         });
         return null;
       } catch {}
     }
   }
-};
+}
 
 const metascraper = metaScraper([
   metaScraperAuthor(),

@@ -12,7 +12,7 @@ Written from scratch to reimplement [rlp-proxy](https://github.com/Dhaiwat10/rlp
 - uses fastify (instead of express)
 - caching with mongodb, also caches null metadata
 - auto delete successful caches after 30 days, null caches after 1 day
-- 5 seconds timeout
+- 4 seconds timeout
 
 ## Compatibility
 
