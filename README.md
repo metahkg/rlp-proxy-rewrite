@@ -23,7 +23,7 @@ Written from scratch to reimplement [rlp-proxy](https://github.com/Dhaiwat10/rlp
 
 - rate limit:
   - cached: 1000 / 30 seconds
-  - uncached: 10 / 30 seconds
+  - uncached: 5 / 30 seconds
 - _Warning_: slower since it uses puppeteer
 - manifest support not yet available, as [metascraper-manifest](https://www.npmjs.com/package/metascraper-manifest) does not have types.
 - the querystring `url` should be UTF-8 encoded, or some urls may not be supported
