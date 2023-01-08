@@ -30,4 +30,8 @@ COPY ./package.json ./yarn.lock ./
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/node_modules ./node_modules
 
+RUN chown -Rf node:node /app
+
+USER node
+
 CMD yarn start
