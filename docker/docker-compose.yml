@@ -6,7 +6,7 @@ services:
       - ${PORT}:${PORT}
     environment:
       PORT: ${PORT}
-      DB_URI: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@rlp-mongo:27017
+      MONGO_URI: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@rlp-mongo:27017
     restart: always
     tty: true
     networks:
