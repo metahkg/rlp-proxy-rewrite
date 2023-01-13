@@ -133,7 +133,7 @@ tagging:
 	- package.json
 
 publish-api:
-  image: node:latest
+  image: node:18-alpine
   stage: deploy
   allow_failure: true
   script:
