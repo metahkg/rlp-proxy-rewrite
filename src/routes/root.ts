@@ -6,7 +6,8 @@ import metadataScraper from "../lib/scraper";
 import { Cache } from "../types/cache";
 import { RateLimitOptions } from "@fastify/rate-limit";
 import { redis } from "../lib/redis";
-import { sha1 } from "../lib/hash";
+import { genkey_redis } from "../lib/genkey_redis";
+import { positiveOrZero } from "../lib/positiveOrZero";
 
 export default function (
   fastify: FastifyInstance,
@@ -73,7 +74,7 @@ export default function (
         ) => {
           if (req.query?.url) {
             const cached = await redis
-              .get(`cache-${sha1(req.query.url)}`)
+              .get(genkey_redis(req.query.url))
               .then((result) => Boolean(result))
               .catch(() => false);
             req.cached = cached;
@@ -93,25 +94,43 @@ export default function (
         { projection: { _id: 0, metadata: 1 } }
       )) as unknown as Cache | null;
 
+      const redis_key = genkey_redis(url);
+
       if (cache) {
         if (!req.cached) {
-          redis.set(`cache-${sha1(url)}`, 1).catch(console.error);
+          redis
+            .set(
+              redis_key,
+              1,
+              "EX",
+              positiveOrZero(
+                cache.createdAt.getTime() +
+                  100 * 60 * 24 * 30 -
+                  new Date().getTime()
+              )
+            )
+            .catch(console.error);
         }
         return res.send({ metadata: cache.metadata });
       }
 
       if (req.cached && !cache) {
-        redis.del(`cache-${sha1(url)}`).catch(console.error);
+        redis.del(redis_key).catch(console.error);
       }
 
       const data = await metadataScraper(url);
       if (!data) {
         res.send({ metadata: null });
-        await cacheCl.insertOne({
-          url,
-          createdAt: new Date(),
-          metadata: null,
-        });
+        await cacheCl
+          .insertOne({
+            url,
+            createdAt: new Date(),
+            metadata: null,
+          })
+          .catch(console.error);
+        await redis
+          .set(redis_key, 1, "EX", 1000 * 60 * 60 * 24 * 1)
+          .catch(console.error);
       } else {
         const metadata = {
           title: data.title ?? null,
@@ -123,9 +142,13 @@ export default function (
         res.send(<{ metadata: APIResponse }>{
           metadata,
         });
-        await cacheCl.insertOne({ url, createdAt: new Date(), metadata });
+        await cacheCl
+          .insertOne({ url, createdAt: new Date(), metadata })
+          .catch(console.error);
+        await redis
+          .set(redis_key, 1, "EX", 1000 * 60 * 60 * 24 * 30)
+          .catch(console.error);
       }
-      redis.set(`cache-${sha1(url)}`, 1);
     }
   );
   done();
