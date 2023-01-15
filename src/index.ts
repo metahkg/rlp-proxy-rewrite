@@ -7,6 +7,8 @@ import dotenv from "dotenv";
 import { client } from "./lib/mongodb";
 import { agenda } from "./lib/agenda";
 import { initBrowser } from "./lib/scraper";
+import { redis } from "./lib/redis";
+import { sha1 } from "./lib/hash";
 
 dotenv.config();
 
@@ -31,9 +33,11 @@ async function build() {
   await fastify.register(fastifyCors);
   await fastify.register(fastifyRateLimit, {
     global: true,
-    max: 1000,
+    max: 200,
     ban: 50,
     timeWindow: 1000 * 30,
+    redis,
+    keyGenerator: (req) => sha1(req.ip),
   });
 
   await fastify.register(routes);
