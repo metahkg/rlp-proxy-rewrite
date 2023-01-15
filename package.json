@@ -55,6 +55,7 @@
     "@types/metascraper-title": "^5.14.0",
     "@types/metascraper-url": "^5.14.0",
     "@types/node": "^18.11.9",
+    "eslint": "^8.32.0",
     "husky": "^8.0.0",
     "nodemon": "^2.0.20",
     "nswag": "^13.17.0",
