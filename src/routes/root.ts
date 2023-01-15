@@ -15,9 +15,11 @@ export default function (
   done: (err?: Error) => void
 ) {
   const querySchema = Type.Object({
-    url: Type.RegEx(
-      /^https?:\/\/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9](\/(.+)?)?$/
-    ),
+    url: Type.String({
+      pattern:
+        "^https?://(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9](/(.+)?)?$",
+      maxLength: 1000,
+    }),
   });
   fastify.get(
     "/",
