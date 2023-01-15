@@ -14,7 +14,8 @@
     "docker:vpn": "cd docker && docker-compose -f docker-compose.vpn.yml up -d",
     "docker:vpn:source": "cd docker && docker-compose -f docker-compose.vpn.yml up -d --build",
     "docker:down": "cd docker && docker-compose down",
-    "docker:build": "cd docker && docker-compose build"
+    "docker:build": "cd docker && docker-compose build",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@fastify/cors": "^8.2.0",
@@ -25,6 +26,8 @@
     "ajv-formats": "^2.1.1",
     "dotenv": "^16.0.3",
     "fastify": "^4.10.2",
+    "hash.js": "^1.1.7",
+    "ioredis": "^5.2.5",
     "metascraper": "^5.31.3",
     "metascraper-author": "^5.31.3",
     "metascraper-clearbit": "^5.31.3",
@@ -52,6 +55,7 @@
     "@types/metascraper-title": "^5.14.0",
     "@types/metascraper-url": "^5.14.0",
     "@types/node": "^18.11.9",
+    "husky": "^8.0.0",
     "nodemon": "^2.0.20",
     "nswag": "^13.17.0",
     "prettier": "^2.7.1",

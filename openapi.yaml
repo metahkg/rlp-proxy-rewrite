@@ -27,7 +27,7 @@ info:
     ## Other information
 
     - rate limit:
-      - cached: 1000 / 30 seconds
+      - cached: 200 / 30 seconds
       - uncached: 5 / 30 seconds
     - *Warning*: slower since it uses puppeteer
     - manifest support not yet available, as [metascraper-manifest](https://www.npmjs.com/package/metascraper-manifest) does not have types."

@@ -5,6 +5,8 @@ import { APIResponse } from "../types/ApiResponse";
 import metadataScraper from "../lib/scraper";
 import { Cache } from "../types/cache";
 import { RateLimitOptions } from "@fastify/rate-limit";
+import { redis } from "../lib/redis";
+import { sha1 } from "../lib/hash";
 
 export default function (
   fastify: FastifyInstance,
@@ -30,41 +32,55 @@ export default function (
             if (key?.startsWith?.("new")) {
               return 5;
             } else {
-              return 1000;
+              return 200;
             }
           },
           keyGenerator: async (
             req: FastifyRequest<{ Querystring: Static<typeof querySchema> }>
           ) => {
-            const { url } = req.query;
-            return (await cacheCl.findOne(
-              { url },
-              { projection: { _id: 0, metadata: 0 } }
-            ))
-              ? req.ip
-              : `new${req.ip}`;
+            return req.cached ? req.ip : `new${req.ip}`;
           },
         },
       },
-      preValidation: function (
-        req: FastifyRequest<{ Querystring: Static<typeof querySchema> }>,
-        _res,
-        done
-      ) {
-        if (!req.query?.url) return done();
-        try {
-          req.query.url = decodeURIComponent(req.query.url);
-        } catch {}
-        if (
-          !["https://", "http://"].some((v) => req.query.url?.startsWith(v))
-        ) {
-          req.query.url = `https://${req.query.url}`;
-        }
-        if (req.query.url?.endsWith("/")) {
-          req.query.url = req.query.url?.slice(0, -1);
-        }
-        done();
-      },
+      preParsing: [
+        (
+          req: FastifyRequest<{ Querystring: Static<typeof querySchema> }>,
+          _res,
+          _payload,
+          done
+        ) => {
+          if (!req.query?.url) return done();
+          try {
+            req.query.url = decodeURIComponent(req.query.url);
+          } catch {}
+          if (
+            !["https://", "http://"].some((v) => req.query.url?.startsWith(v))
+          ) {
+            req.query.url = `https://${req.query.url}`;
+          }
+          if (req.query.url?.endsWith("/")) {
+            req.query.url = req.query.url?.slice(0, -1);
+          }
+          req.query.url = req.query.url.split("?")[0];
+          done();
+        },
+      ],
+      preHandler: [
+        async (
+          req: FastifyRequest<{ Querystring: Static<typeof querySchema> }>,
+          _res,
+          done
+        ) => {
+          if (req.query?.url) {
+            const cached = await redis
+              .get(`cache-${sha1(req.query.url)}`)
+              .then((result) => Boolean(result))
+              .catch(() => false);
+            req.cached = cached;
+          }
+          done();
+        },
+      ],
     },
     async (
       req: FastifyRequest<{ Querystring: Static<typeof querySchema> }>,
@@ -78,11 +94,25 @@ export default function (
       )) as unknown as Cache | null;
 
       if (cache) {
+        if (!req.cached) {
+          redis.set(`cache-${sha1(url)}`, 1).catch(console.error);
+        }
         return res.send({ metadata: cache.metadata });
       }
 
-      try {
-        const data = await metadataScraper(url);
+      if (req.cached && !cache) {
+        redis.del(`cache-${sha1(url)}`).catch(console.error);
+      }
+
+      const data = await metadataScraper(url);
+      if (!data) {
+        res.send({ metadata: null });
+        await cacheCl.insertOne({
+          url,
+          createdAt: new Date(),
+          metadata: null,
+        });
+      } else {
         const metadata = {
           title: data.title ?? null,
           description: data.description ?? null,
@@ -94,14 +124,8 @@ export default function (
           metadata,
         });
         await cacheCl.insertOne({ url, createdAt: new Date(), metadata });
-      } catch {
-        res.send({ metadata: null });
-        await cacheCl.insertOne({
-          url,
-          createdAt: new Date(),
-          metadata: null,
-        });
       }
+      redis.set(`cache-${sha1(url)}`, 1);
     }
   );
   done();

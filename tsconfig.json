@@ -15,12 +15,11 @@
     "paths": {
       "*": ["node_modules/*"]
     },
+    "typeRoots": ["src/types/definitions"]
   },
   "include": ["src/**/*"],
   "ts-node": {
     "files": true
   },
-  "files": [
-    "src/index.ts"
-  ],
+  "files": ["src/index.ts", "src/types/definitions/fastify.d.ts"]
 }
