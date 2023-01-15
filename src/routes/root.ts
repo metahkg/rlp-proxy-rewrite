@@ -104,7 +104,7 @@ export default function (
               1,
               "EX",
               positiveOrZero(
-                cache.createdAt.getTime() +
+                new Date(cache.createdAt).getTime() +
                   100 * 60 * 24 * 30 -
                   new Date().getTime()
               )
