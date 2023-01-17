@@ -23,22 +23,22 @@ docker-build:
     - docker:dind
   before_script:
     - apk add nodejs-current
+    - docker pull tonistiigi/binfmt:latest
+    - docker run --privileged --rm tonistiigi/binfmt --uninstall qemu-*
+    - docker run --privileged --rm tonistiigi/binfmt --install all
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
     - version=$(node -e 'console.log(require("./package.json").version)')
-    - docker build --pull -t "${CI_REGISTRY_IMAGE}/${CI_COMMIT_BRANCH}:latest"
+    - docker buildx create --use
+    - docker buildx build --push --pull --platform linux/amd64,linux/arm64
+     -t "${CI_REGISTRY_IMAGE}/${CI_COMMIT_BRANCH}:latest"
      -t "${CI_REGISTRY_IMAGE}/${CI_COMMIT_BRANCH}:${CI_COMMIT_SHORT_SHA}"
      -t "${CI_REGISTRY_IMAGE}/${CI_COMMIT_BRANCH}:${version}" .
-    - docker push "${CI_REGISTRY_IMAGE}/${CI_COMMIT_BRANCH}:latest"
-    - docker push "${CI_REGISTRY_IMAGE}/${CI_COMMIT_BRANCH}:${CI_COMMIT_SHORT_SHA}"
-    - docker push "${CI_REGISTRY_IMAGE}/${CI_COMMIT_BRANCH}:${version}"
-    - if [ "$CI_COMMIT_BRANCH" = "master" ]; then docker build --pull
+    - if [ "$CI_COMMIT_BRANCH" = "master" ]; then
+     docker buildx build --push --pull --platform linux/amd64,linux/arm64
      -t "${CI_REGISTRY_IMAGE}:latest"
      -t "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}"
-     -t "${CI_REGISTRY_IMAGE}:${version}" .;
-     docker push "${CI_REGISTRY_IMAGE}:latest";
-     docker push "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}";
-     docker push "${CI_REGISTRY_IMAGE}:${version}"; fi;
+     -t "${CI_REGISTRY_IMAGE}:${version}" .; fi;
   rules:
     - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "dev"
       exists:
