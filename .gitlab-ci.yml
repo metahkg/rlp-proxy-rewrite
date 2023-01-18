@@ -2,6 +2,7 @@ stages:
   - lint
   - test
   - build
+  - update
   - deploy
   - review
   - dast
@@ -14,7 +15,6 @@ stages:
   - incremental rollout 100%
   - performance
   - cleanup
-  - update
 
 docker-build:
   image: docker:latest
@@ -23,22 +23,22 @@ docker-build:
     - docker:dind
   before_script:
     - apk add nodejs-current
+    - docker pull tonistiigi/binfmt:latest
+    - docker run --privileged --rm tonistiigi/binfmt --uninstall qemu-*
+    - docker run --privileged --rm tonistiigi/binfmt --install all
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
     - version=$(node -e 'console.log(require("./package.json").version)')
-    - docker build --pull -t "${CI_REGISTRY_IMAGE}/${CI_COMMIT_BRANCH}:latest"
+    - docker buildx create --use
+    - docker buildx build --push --pull --platform linux/amd64,linux/arm64
+     -t "${CI_REGISTRY_IMAGE}/${CI_COMMIT_BRANCH}:latest"
      -t "${CI_REGISTRY_IMAGE}/${CI_COMMIT_BRANCH}:${CI_COMMIT_SHORT_SHA}"
      -t "${CI_REGISTRY_IMAGE}/${CI_COMMIT_BRANCH}:${version}" .
-    - docker push "${CI_REGISTRY_IMAGE}/${CI_COMMIT_BRANCH}:latest"
-    - docker push "${CI_REGISTRY_IMAGE}/${CI_COMMIT_BRANCH}:${CI_COMMIT_SHORT_SHA}"
-    - docker push "${CI_REGISTRY_IMAGE}/${CI_COMMIT_BRANCH}:${version}"
-    - if [ "$CI_COMMIT_BRANCH" = "master" ]; then docker build --pull
+    - if [ "$CI_COMMIT_BRANCH" = "master" ]; then
+     docker buildx build --push --pull --platform linux/amd64,linux/arm64
      -t "${CI_REGISTRY_IMAGE}:latest"
      -t "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}"
-     -t "${CI_REGISTRY_IMAGE}:${version}" .;
-     docker push "${CI_REGISTRY_IMAGE}:latest";
-     docker push "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}";
-     docker push "${CI_REGISTRY_IMAGE}:${version}"; fi;
+     -t "${CI_REGISTRY_IMAGE}:${version}" .; fi;
   rules:
     - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "dev"
       exists:
@@ -46,8 +46,9 @@ docker-build:
 
 lint:
   stage: lint
-  image: node:18
+  image: node:18-alpine
   before_script:
+    - apk add git
     - git checkout $CI_COMMIT_BRANCH
     - git config user.name metahkg-bot
     - git config user.email bot@metahkg.org
@@ -63,24 +64,6 @@ lint:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       when: never
     - if: $CI_COMMIT_AUTHOR != "metahkg-bot <bot@metahkg.org>"
-
-tagging:
-  image: node:18-alpine
-  stage: deploy
-  allow_failure: true
-  before_script:
-    - apk add git
-  script:
-    - git config --global user.name metahkg-bot
-    - git config --global user.email bot@metahkg.org
-    - tag=$(node -e "console.log(require('./package.json').version)")
-    - if [ $CI_COMMIT_BRANCH = "dev" ]; then tag=${tag}-dev; fi;
-    - git tag "$tag"
-    - git push https://root:$gitlab_token@$CI_SERVER_HOST/$CI_PROJECT_PATH.git $tag
-  rules:
-    - if: $CI_COMMIT_TAG
-      when: never
-    - if: $CI_COMMIT_AUTHOR != "metahkg-bot <bot@metahkg.org>" && ($CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "master")
 
 container_scanning:
   stage: review
@@ -114,19 +97,43 @@ update-api:
     - yarn install
     - yarn generate
     - git add -A
-    - git commit -a -m "api - update from latest openapi" || echo "nothing to commit, skipping"
-    - git push origin $CI_COMMIT_BRANCH
+    - git commit -a -m "api - update from latest openapi" || (echo "nothing to commit, skipping" && exit 0)
+    - git push origin $CI_COMMIT_BRANCH || exit 0
   artifacts:
     paths:
       - api/dist
   rules:
-    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "dev"
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_COMMIT_AUTHOR != "metahkg-bot <bot@metahkg.org>" && ($CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "master")
+
+
+tagging:
+  image: node:18-alpine
+  stage: deploy
+  needs: ["update-api"]
+  allow_failure: true
+  before_script:
+    - apk add git
+    - git config --global user.name metahkg-bot
+    - git config --global user.email bot@metahkg.org
+    - git remote set-url origin https://root:$gitlab_token@$CI_SERVER_HOST/$CI_PROJECT_PATH.git || git remote add origin https://root:$gitlab_token@$CI_SERVER_HOST/$CI_PROJECT_PATH.git
+    - git checkout $CI_COMMIT_BRANCH
+    - git pull origin $CI_COMMIT_BRANCH
+  script:
+    - tag=$(node -e "console.log(require('./package.json').version)")
+    - if [ $CI_COMMIT_BRANCH = "dev" ]; then tag=${tag}-dev; fi;
+    - git tag "$tag"
+    - git push origin $tag
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_COMMIT_AUTHOR != "metahkg-bot <bot@metahkg.org>" && ($CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "master")
       changes:
-        - openapi.yaml
-    - if: $UPDATE == "true"
+        - package.json
 
 publish-api:
-  image: node:latest
+  image: node:18-alpine
   stage: deploy
   allow_failure: true
   script:
@@ -141,6 +148,10 @@ publish-api:
     - if [ "$CI_COMMIT_TAG" = "${NPM_PACKAGE_ORIGINAL_VERSION}-dev" ]; then npm publish --tag dev --access=public; else npm publish --access=public; fi;
   rules:
     - if: "$CI_COMMIT_TAG"
+
+build:
+  stage: build
+  retry: 2
 
 include:
   - template: Auto-DevOps.gitlab-ci.yml

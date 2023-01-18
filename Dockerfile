@@ -1,12 +1,15 @@
 FROM node:alpine as puppeteer
 
+WORKDIR /app
+
+ARG env
+ENV env $env
+
 RUN apk add --no-cache chromium ca-certificates ffmpeg
 
 # skip installing chrome
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
   PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
-
-WORKDIR /app
 
 FROM puppeteer as build
 
@@ -17,17 +20,19 @@ RUN yarn install
 
 COPY ./src ./src
 
-RUN yarn build
-
-RUN yarn install --production
+RUN if [ "$env" = "dev" ]; then mkdir dist; else yarn build && yarn install --production && rm tsconfig.json; fi;
 
 FROM puppeteer
 
 WORKDIR /app
 
-COPY ./package.json ./yarn.lock ./
+COPY --from=build /app/package.json* /app/tsconfig.json* ./
 
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/node_modules ./node_modules
 
-CMD yarn start
+RUN chown -Rf node:node /app
+
+USER node
+
+CMD if [ "$env" = "dev" ]; then yarn dev; else yarn start; fi;
