@@ -1,15 +1,15 @@
 {
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
-  "serialNumber": "urn:uuid:9170b36b-9aab-4b14-ae9b-8c92fe70e2f4",
+  "serialNumber": "urn:uuid:d990df7e-c88e-4ae1-be01-61ede874a8ad",
   "version": 1,
   "metadata": {
-    "timestamp": "2022-11-15T10:08:54Z",
+    "timestamp": "2023-01-18T07:55:44Z",
     "tools": [
       {
         "vendor": "GitLab",
         "name": "Gemnasium",
-        "version": "3.10.6"
+        "version": "3.11.1"
       }
     ],
     "authors": [
@@ -20,11 +20,11 @@
     ],
     "properties": [
       {
-        "name": "gitlab:input_file",
+        "name": "gitlab:dependency_scanning:input_file",
         "value": "api/yarn.lock"
       },
       {
-        "name": "gitlab:package_manager",
+        "name": "gitlab:dependency_scanning:package_manager",
         "value": "yarn"
       }
     ]
