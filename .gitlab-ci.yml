@@ -96,7 +96,6 @@ update-api:
     - cd api
     - yarn install
     - yarn generate
-    - git add -A
     - git commit -a -m "api - update from latest openapi" || (echo "nothing to commit, skipping" && exit 0)
     - git push origin $CI_COMMIT_BRANCH || exit 0
   artifacts:
