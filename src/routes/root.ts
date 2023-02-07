@@ -10,7 +10,6 @@ import { genkey_redis } from "../lib/genkey_redis";
 import { positiveOrZero } from "../lib/positiveOrZero";
 import dns from "dns";
 import isLocalhost from "is-localhost-ip";
-import is_ip_private from "private-ip";
 
 export default function (
   fastify: FastifyInstance,
@@ -87,11 +86,7 @@ export default function (
               });
             });
 
-            if (
-              ips.some((ip) => {
-                isLocalhost(ip) || is_ip_private(ip);
-              })
-            ) {
+            if (ips.some((ip) => isLocalhost(ip))) {
               return res.status(403).send({
                 message: "Refused to process private or local address.",
               });

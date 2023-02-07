@@ -40,7 +40,6 @@
     "metascraper-title": "^5.31.3",
     "metascraper-url": "^5.31.3",
     "mongodb": "^4.11.0",
-    "private-ip": "^3.0.0",
     "puppeteer": "^19.2.2",
     "puppeteer-extra": "^3.3.4",
     "puppeteer-extra-plugin-adblocker": "^2.13.5",
