@@ -17,7 +17,7 @@ export default function (
   const querySchema = Type.Object({
     url: Type.String({
       pattern:
-        "^https?://(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9](/(.+)?)?$",
+        "^https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]{0,2000})$",
       maxLength: 1000,
     }),
   });
