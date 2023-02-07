@@ -8,6 +8,9 @@ import { RateLimitOptions } from "@fastify/rate-limit";
 import { redis } from "../lib/redis";
 import { genkey_redis } from "../lib/genkey_redis";
 import { positiveOrZero } from "../lib/positiveOrZero";
+import dns from "dns";
+import isLocalhost from "is-localhost-ip";
+import is_ip_private from "private-ip";
 
 export default function (
   fastify: FastifyInstance,
@@ -71,8 +74,34 @@ export default function (
       preHandler: [
         async (
           req: FastifyRequest<{ Querystring: Static<typeof querySchema> }>,
-          _res,
-          done
+          res
+        ) => {
+          const { url } = req.query;
+          if (!url) return;
+
+          try {
+            const ips: string[] = await new Promise((resolve, reject) => {
+              dns.resolve(new URL(url).hostname, (err, ips) => {
+                if (err) reject(err);
+                else resolve(ips);
+              });
+            });
+
+            if (
+              ips.some((ip) => {
+                isLocalhost(ip) || is_ip_private(ip);
+              })
+            ) {
+              return res.status(403).send({
+                message: "Refused to process private or local address.",
+              });
+            }
+          } catch {
+            return res.code(400).send({ error: "Failed to resolve hostname." });
+          }
+        },
+        async (
+          req: FastifyRequest<{ Querystring: Static<typeof querySchema> }>
         ) => {
           if (req.query?.url) {
             const cached = await redis
@@ -81,7 +110,6 @@ export default function (
               .catch(() => false);
             req.cached = cached;
           }
-          done();
         },
       ],
     },
