@@ -86,9 +86,13 @@ export default function (
               });
             });
 
-            if (ips.some((ip) => isLocalhost(ip))) {
+            if (
+              (
+                await Promise.all(ips.map(async (ip) => await isLocalhost(ip)))
+              ).some(Boolean)
+            ) {
               return res.status(403).send({
-                message: "Refused to process private or local address.",
+                error: "Refused to process private or local address.",
               });
             }
           } catch {
