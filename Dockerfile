@@ -31,7 +31,7 @@ COPY --from=build /app/package.json* /app/tsconfig.json* ./
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/node_modules ./node_modules
 
-RUN chown -Rf node:node /app
+RUN chown -f node:node /app
 
 USER node
 
