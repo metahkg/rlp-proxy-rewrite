@@ -135,7 +135,7 @@ export default function (
               Math.round(
                 positiveOrZero(
                   new Date(cache.createdAt).getTime() +
-                    1000 * 60 * 24 * 30 -
+                    1000 * 60 * 60 * 24 * 30 -
                     new Date().getTime()
                 ) / 1000
               ) || 60 * 60 * 24 * 30
