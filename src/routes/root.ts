@@ -132,11 +132,13 @@ export default function (
               redis_key,
               1,
               "EX",
-              positiveOrZero(
-                new Date(cache.createdAt).getTime() +
-                  100 * 60 * 24 * 30 -
-                  new Date().getTime()
-              )
+              Math.round(
+                positiveOrZero(
+                  new Date(cache.createdAt).getTime() +
+                    1000 * 60 * 24 * 30 -
+                    new Date().getTime()
+                ) / 1000
+              ) || 60 * 60 * 24 * 30
             )
             .catch(console.error);
         }
@@ -158,7 +160,7 @@ export default function (
           })
           .catch(console.error);
         await redis
-          .set(redis_key, 1, "EX", 1000 * 60 * 60 * 24 * 1)
+          .set(redis_key, 1, "EX", 60 * 60 * 24 * 1)
           .catch(console.error);
       } else {
         const metadata = {
@@ -175,7 +177,7 @@ export default function (
           .insertOne({ url, createdAt: new Date(), metadata })
           .catch(console.error);
         await redis
-          .set(redis_key, 1, "EX", 1000 * 60 * 60 * 24 * 30)
+          .set(redis_key, 1, "EX", 60 * 60 * 24 * 30)
           .catch(console.error);
       }
     }
