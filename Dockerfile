@@ -16,11 +16,11 @@ FROM puppeteer as build
 RUN apk add --no-cache python3 make g++
 
 COPY ./package.json ./yarn.lock ./tsconfig.json ./
-RUN yarn install
+RUN yarn install --frozen-lockfile --timeout 1000000
 
 COPY ./src ./src
 
-RUN if [ "$env" = "dev" ]; then mkdir dist; else yarn build && yarn install --production && rm tsconfig.json; fi;
+RUN if [ "$env" = "dev" ]; then mkdir dist; else yarn build && yarn install --production --frozen-lockfile --timeout 1000000 && rm tsconfig.json; fi;
 
 FROM puppeteer
 
