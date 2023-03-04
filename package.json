@@ -2,11 +2,11 @@
   "name": "@metahkg/rlp-proxy-rewrite",
   "author": "wcyat",
   "license": "MIT",
-  "version": "6.3.0",
+  "version": "6.4.0",
   "scripts": {
     "start": "node dist/index.js",
     "build": "tsc",
-    "test": "exit 0",
+    "test": "tsc --noEmit",
     "dev": "nodemon src/index.ts",
     "lint": "prettier --write src/**/* api/src/**/*",
     "docker": "cd docker && docker-compose pull && docker-compose up -d",
