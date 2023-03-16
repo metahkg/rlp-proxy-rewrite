@@ -33,7 +33,7 @@ Written from scratch to reimplement [rlp-proxy](https://github.com/Dhaiwat10/rlp
 ### Docker
 
 ```bash
-cp docker/template.env docker.env
+cp docker/template.env docker/.env
 ```
 
 Then config variables in `docker/.env`, after that either follow [prebuilt](#prebuilt) or [from source](#from-source).
