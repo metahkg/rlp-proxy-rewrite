@@ -1,16 +1,25 @@
 services:
   rlp:
     image: registry.gitlab.com/metahkg/rlp-proxy-rewrite:latest
+    container_name: rlp
+    ports:
+      - ${PORT}:${PORT}
     build:
       context: ../
-      dockerfile: ./Dockerfile
-    container_name: rlp
+      dockerfile: Dockerfile
+      args:
+        env: ${env}
     environment:
       PORT: ${PORT}
-      MONGO_URI: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@localhost:27017
+      MONGO_URI: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@protonvpn:27017
+      env: ${env}
+      REDIS_HOST: protonvpn
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
     restart: always
     tty: true
     network_mode: service:protonvpn
+      - rlp
     depends_on:
       - rlp-mongo
       - protonvpn
@@ -28,6 +37,16 @@ services:
       - ./data:/data/db
     depends_on:
       - protonvpn
+  redis:
+    image: redis:7.0-alpine
+    container_name: rlp-redis
+    command: redis-server --save 10 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
+    restart: always
+    network_mode: service:protonvpn
+    volumes:
+      - ./redis_data:/data
+    depends_on:
+      - protonvpn
   protonvpn:
     container_name: protonvpn
     environment:
@@ -42,6 +61,7 @@ services:
     restart: unless-stopped
     ports:
       - ${PORT}:${PORT}
+      - ${REDIS_PORT}:6379
     networks:
       - internet
       - proxy
