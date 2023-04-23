@@ -91,12 +91,15 @@ export default function (
                 await Promise.all(ips.map(async (ip) => await isLocalhost(ip)))
               ).some(Boolean)
             ) {
-              return res.status(403).send({
+              return res.code(403).send({
+                statusCode: 403,
                 error: "Refused to process private or local address.",
               });
             }
           } catch {
-            return res.code(400).send({ error: "Failed to resolve hostname." });
+            return res
+              .code(400)
+              .send({ statusCode: 400, error: "Failed to resolve hostname." });
           }
         },
         async (
