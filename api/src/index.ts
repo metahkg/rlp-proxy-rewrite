@@ -225,6 +225,8 @@ export interface Metadata {
   description: string | null;
   /** image url of the site */
   image: string | null;
+  /** hmac signature of the image url, would be present if `cert/hmac.key` exists */
+  image_signature?: string;
   /** site name of the site */
   siteName: string | null;
   /** hostname of the site (e.g. `metahkg.org`) */
