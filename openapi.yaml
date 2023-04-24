@@ -135,6 +135,10 @@ components:
           nullable: true
           description: image url of the site
           example: https://metahkg.org/images/logo.png
+        image_signature:
+          type: string
+          format: base64
+          description: hmac signature of the image url, would be present if `cert/hmac.key` exists
         siteName:
           type: string
           nullable: true

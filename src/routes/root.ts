@@ -7,6 +7,7 @@ import { Cache } from "../types/cache";
 import { RateLimitOptions } from "@fastify/rate-limit";
 import { redis } from "../lib/redis";
 import { genkey_redis } from "../lib/genkey_redis";
+import { getHMACKey, HMACSign } from "../lib/hmac";
 import { positiveOrZero } from "../lib/positiveOrZero";
 import dns from "dns";
 import isLocalhost from "is-localhost-ip";
@@ -170,6 +171,8 @@ export default function (
           title: data.title ?? null,
           description: data.description ?? null,
           image: data.image ?? null,
+          ...(data.image &&
+            getHMACKey() && { image_signature: HMACSign(data.image) }),
           hostname: new URL(url).hostname ?? null,
           siteName: data.publisher ?? null,
         };
