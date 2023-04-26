@@ -1,4 +1,9 @@
-import { FastifyInstance, FastifyPluginOptions, FastifyRequest } from "fastify";
+import {
+  FastifyInstance,
+  FastifyPluginOptions,
+  FastifyReply,
+  FastifyRequest,
+} from "fastify";
 import { Type, Static } from "@sinclair/typebox";
 import { cacheCl } from "../lib/mongodb";
 import { APIResponse } from "../types/ApiResponse";
@@ -97,7 +102,7 @@ export default function (
         },
         async (
           req: FastifyRequest<{ Querystring: Static<typeof querySchema> }>,
-          res
+          res: FastifyReply
         ) => {
           const { url } = req.query;
           if (!url) return;
