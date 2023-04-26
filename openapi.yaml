@@ -86,7 +86,7 @@ components:
         description: must be a valid https/http URL, UTF-8 encoded
     signature:
       in: query
-      name: url
+      name: signature
       required: false
       description: HMAC signature of the url. Required if HMAC_VERIFY is true.
       schema:
