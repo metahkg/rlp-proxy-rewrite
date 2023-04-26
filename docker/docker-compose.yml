@@ -16,6 +16,9 @@ services:
       REDIS_HOST: rlp-redis
       REDIS_PORT: 6379
       REDIS_PASSWORD: ${REDIS_PASSWORD}
+      HMAC_KEY: ${HMAC_KEY}
+      HMAC_SIGN: ${HMAC_SIGN}
+      HMAC_VERIFY: ${HMAC_VERIFY}
     restart: always
     tty: true
     networks:

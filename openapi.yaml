@@ -63,6 +63,7 @@ paths:
       description: Alias of `getMetadata`
       parameters:
         - $ref: "#/components/parameters/url"
+        - $ref: "#/components/parameters/signature"
       responses:
         "200":
           $ref: "#/components/responses/metadata"
@@ -82,6 +83,15 @@ components:
         type: string
         format: uri
         description: must be a valid https/http URL, UTF-8 encoded
+    signature:
+      in: query
+      name: url
+      required: false
+      description: HMAC signature of the url. Required if HMAC_VERIFY is true.
+      schema:
+        type: string
+        format: base64
+        description: must be a valid base64-encoded hmac signature of the url
   responses:
     metadata:
       description: Success

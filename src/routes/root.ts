@@ -7,10 +7,11 @@ import { Cache } from "../types/cache";
 import { RateLimitOptions } from "@fastify/rate-limit";
 import { redis } from "../lib/redis";
 import { genkey_redis } from "../lib/genkey_redis";
-import { getHMACKey, HMACSign } from "../lib/hmac";
+import { HMACSign, HMACVerify } from "../lib/hmac";
 import { positiveOrZero } from "../lib/positiveOrZero";
 import dns from "dns";
 import isLocalhost from "is-localhost-ip";
+import { config } from "../lib/config";
 
 export default function (
   fastify: FastifyInstance,
@@ -23,6 +24,11 @@ export default function (
         "^https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]{0,2000})$",
       maxLength: 1000,
     }),
+    ...(config.HMAC_VERIFY &&
+      config.HMAC_KEY && {
+        // base64 sha256, so 44 bytes
+        signature: Type.String({ maxLength: 200 }),
+      }),
   });
   fastify.get(
     "/",
@@ -72,6 +78,23 @@ export default function (
         },
       ],
       preHandler: [
+        (
+          req: FastifyRequest<{ Querystring: Static<typeof querySchema> }>,
+          res,
+          done
+        ) => {
+          const { url, signature } = req.query;
+          if (config.HMAC_VERIFY && config.HMAC_KEY) {
+            if (!HMACVerify(url, signature)) {
+              return res.code(403).send({
+                statusCode: 403,
+                error: "Forbidden",
+                message: "Invalid HMAC signature.",
+              });
+            }
+          }
+          done();
+        },
         async (
           req: FastifyRequest<{ Querystring: Static<typeof querySchema> }>,
           res
@@ -172,7 +195,8 @@ export default function (
           description: data.description ?? null,
           image: data.image ?? null,
           ...(data.image &&
-            getHMACKey() && { image_signature: HMACSign(data.image) }),
+            config.HMAC_SIGN &&
+            config.HMAC_KEY && { image_signature: HMACSign(data.image) }),
           hostname: new URL(url).hostname ?? null,
           siteName: data.publisher ?? null,
         };
