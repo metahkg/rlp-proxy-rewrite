@@ -61,7 +61,9 @@ export default function (
       },
       preParsing: [
         (
-          req: FastifyRequest<{ Querystring: Static<typeof querySchema> }>,
+          req: FastifyRequest<{
+            Querystring: Static<typeof querySchema>;
+          }> & { originalUrl: string },
           _res,
           _payload,
           done
@@ -70,6 +72,7 @@ export default function (
           try {
             req.query.url = decodeURIComponent(req.query.url);
           } catch {}
+          req.originalUrl = req.query.url;
           if (
             !["https://", "http://"].some((v) => req.query.url?.startsWith(v))
           ) {
@@ -84,13 +87,16 @@ export default function (
       ],
       preHandler: [
         (
-          req: FastifyRequest<{ Querystring: Static<typeof querySchema> }>,
+          req: FastifyRequest<{ Querystring: Static<typeof querySchema> }> & {
+            originalUrl: string;
+          },
           res,
           done
         ) => {
-          const { url, signature } = req.query;
+          const { signature } = req.query;
+          const { originalUrl } = req;
           if (config.HMAC_VERIFY && config.HMAC_KEY) {
-            if (!HMACVerify(url, signature)) {
+            if (!HMACVerify(originalUrl, signature)) {
               return res.code(403).send({
                 statusCode: 403,
                 error: "Forbidden",
@@ -101,7 +107,9 @@ export default function (
           done();
         },
         async (
-          req: FastifyRequest<{ Querystring: Static<typeof querySchema> }>,
+          req: FastifyRequest<{ Querystring: Static<typeof querySchema> }> & {
+            originalUrl: string;
+          },
           res: FastifyReply
         ) => {
           const { url } = req.query;
