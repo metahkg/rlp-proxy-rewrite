@@ -13,6 +13,7 @@ export function getHMACKey() {
     }
     return process.env.HMAC_KEY;
   }
+  return "";
 }
 
 export function HMACSign(data: string) {
