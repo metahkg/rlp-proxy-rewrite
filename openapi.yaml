@@ -49,6 +49,7 @@ paths:
       description: Get metadata of a url. [Source](https://gitlab.com/rlp-proxy-rewrite/-/blob/dev/src/routes/root.ts)
       parameters:
         - $ref: "#/components/parameters/url"
+        - $ref: "#/components/parameters/signature"
       responses:
         "200":
           $ref: "#/components/responses/metadata"
