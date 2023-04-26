@@ -153,6 +153,9 @@ publish-api:
 build:
   stage: build
   retry: 2
+  rules:
+    - if: $CI_COMMIT_BRANCH
+      when: never
 
 sast:
   stage: test
