@@ -6,7 +6,6 @@
     "target": "es2017",
     "declaration": true,
     "noImplicitAny": true,
-    "noImplicitUseStrict": true,
     "moduleResolution": "node",
     "removeComments": false,
     "sourceMap": true,
