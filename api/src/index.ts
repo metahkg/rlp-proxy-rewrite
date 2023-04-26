@@ -36,10 +36,12 @@ export class Client {
   /**
    * Get metadata of a url
    * @param url The requested url (must be a valid https/http URL), UTF-8 encoded, see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent
+   * @param signature (optional) HMAC signature of the url. Required if HMAC_VERIFY is true.
    * @return Success
    */
   getMetadata(
     url: string,
+    signature?: string,
     cancelToken?: CancelToken | undefined
   ): Promise<Anonymous> {
     let url_ = this.baseUrl + "/?";
@@ -48,6 +50,10 @@ export class Client {
         "The parameter 'url' must be defined and cannot be null."
       );
     else url_ += "url=" + encodeURIComponent("" + url) + "&";
+    if (signature === null)
+      throw new Error("The parameter 'signature' cannot be null.");
+    else if (signature !== undefined)
+      url_ += "signature=" + encodeURIComponent("" + signature) + "&";
     url_ = url_.replace(/[?&]$/, "");
 
     let options_: AxiosRequestConfig = {
@@ -128,10 +134,12 @@ export class Client {
   /**
    * Alias of `getMetadata`
    * @param url The requested url (must be a valid https/http URL), UTF-8 encoded, see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent
+   * @param signature (optional) HMAC signature of the url. Required if HMAC_VERIFY is true.
    * @return Success
    */
   getMetadataV2(
     url: string,
+    signature?: string,
     cancelToken?: CancelToken | undefined
   ): Promise<Anonymous> {
     let url_ = this.baseUrl + "/v2?";
@@ -140,6 +148,10 @@ export class Client {
         "The parameter 'url' must be defined and cannot be null."
       );
     else url_ += "url=" + encodeURIComponent("" + url) + "&";
+    if (signature === null)
+      throw new Error("The parameter 'signature' cannot be null.");
+    else if (signature !== undefined)
+      url_ += "signature=" + encodeURIComponent("" + signature) + "&";
     url_ = url_.replace(/[?&]$/, "");
 
     let options_: AxiosRequestConfig = {
