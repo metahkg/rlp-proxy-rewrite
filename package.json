@@ -2,7 +2,7 @@
   "name": "@metahkg/rlp-proxy-rewrite",
   "author": "wcyat",
   "license": "MIT",
-  "version": "6.9.2",
+  "version": "6.9.3",
   "scripts": {
     "start": "node dist/index.js",
     "build": "tsc",
