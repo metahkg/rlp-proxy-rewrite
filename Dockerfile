@@ -19,7 +19,7 @@ ENV env $env
 
 WORKDIR /app
 
-COPY --from=build /app/package.json* /app/tsconfig.json* ./
+COPY --from=build /app/package.json* /app/tsconfig.json* /app/yarn.lock ./
 
 COPY --from=build /app/dist ./dist
 
