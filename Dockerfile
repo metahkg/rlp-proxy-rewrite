@@ -23,7 +23,7 @@ COPY --from=build /app/package.json* /app/tsconfig.json* /app/yarn.lock ./
 
 COPY --from=build /app/dist ./dist
 
-RUN if [ "$env" = "dev" ]; then yarn install; else yarn install --production --frozen-lockfile --timeout 1000000; fi;
+RUN if [ "$env" = "dev" ]; then yarn install; else yarn install --production --frozen-lockfile --timeout 1000000; fi; yarn cache clean;
 
 RUN chown -f pptruser:pptruser /app
 
