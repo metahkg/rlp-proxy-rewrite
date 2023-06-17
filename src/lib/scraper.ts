@@ -56,7 +56,7 @@ async function getContent(url: string): Promise<string | null> {
       );
       setTimeout(async () => {
         try {
-          await page.close().catch(() => {});
+          await page.close();
         } catch {
           // do nothing if failed
         }
@@ -66,7 +66,7 @@ async function getContent(url: string): Promise<string | null> {
       try {
         setTimeout(async () => {
           try {
-            await page.close().catch(() => {});
+            await page.close();
           } catch {
             // do nothing if failed
           }

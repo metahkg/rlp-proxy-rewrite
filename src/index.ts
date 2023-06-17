@@ -49,5 +49,5 @@ async function build() {
 
 build().then((fastify) => {
   const port = Number(process.env.PORT || 3000);
-  fastify.listen({ port, host: "0.0.0.0" }, () => {});
+  fastify.listen({ port, host: "0.0.0.0" });
 });
