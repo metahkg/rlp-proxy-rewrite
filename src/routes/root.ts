@@ -52,7 +52,7 @@ export default function (
               return 200;
             }
           },
-          keyGenerator: async (
+          keyGenerator: (
             req: FastifyRequest<{ Querystring: Static<typeof querySchema> }>
           ) => {
             return req.cached ? req.ip : `new${req.ip}`;
