@@ -17,11 +17,13 @@ async function build() {
   await agenda.start();
   await initBrowser();
 
-  ["removeOldNullCache", "removeOldCache"].forEach(async (name) => {
-    if (!(await agenda.jobs({ name })).length) {
-      await agenda.every("0 0 * * *", name);
-    }
-  });
+  await Promise.all(
+    ["removeOldNullCache", "removeOldCache"].map(async (name) => {
+      if (!(await agenda.jobs({ name })).length) {
+        await agenda.every("0 0 * * *", name);
+      }
+    })
+  );
 
   const fastify = Fastify({
     logger: true,
@@ -47,5 +49,5 @@ async function build() {
 
 build().then((fastify) => {
   const port = Number(process.env.PORT || 3000);
-  fastify.listen({ port, host: "0.0.0.0" }, () => {});
+  fastify.listen({ port, host: "0.0.0.0" });
 });

@@ -29,7 +29,7 @@ let browser: Browser;
 
 export async function initBrowser() {
   browser = await puppeteer.launch({
-    headless: JSON.parse(process.env.NO_HEADLESS || "false") ? false : true,
+    headless: JSON.parse(process.env.NO_HEADLESS || "false") ? false : "new",
     executablePath: executablePath(),
     args: ["--no-sandbox"],
   });
@@ -56,19 +56,24 @@ async function getContent(url: string): Promise<string | null> {
       );
       setTimeout(async () => {
         try {
-          await page.close().catch(() => {});
-        } catch {}
+          await page.close();
+        } catch {
+          // do nothing if failed
+        }
       });
       return html;
     } catch {
       try {
         setTimeout(async () => {
           try {
-            await page.close().catch(() => {});
-          } catch {}
+            await page.close();
+          } catch {
+            // do nothing if failed
+          }
         });
+      } finally {
         return null;
-      } catch {}
+      }
     }
   }
 }

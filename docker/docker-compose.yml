@@ -7,9 +7,21 @@ services:
     container_name: rlp
     ports:
       - ${PORT}:${PORT}
+    build:
+      context: ../
+      dockerfile: Dockerfile
+      args:
+        env: ${env}
     environment:
       PORT: ${PORT}
       MONGO_URI: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@rlp-mongo:27017
+      env: ${env}
+      REDIS_HOST: rlp-redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      HMAC_KEY: ${HMAC_KEY}
+      HMAC_SIGN: ${HMAC_SIGN}
+      HMAC_VERIFY: ${HMAC_VERIFY}
     restart: always
     tty: true
     networks:
@@ -29,6 +41,17 @@ services:
       - rlp
     volumes:
       - ./data:/data/db
+  redis:
+    image: redis:7.0-alpine
+    container_name: rlp-redis
+    command: redis-server --save 10 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
+    restart: always
+    ports:
+      - ${REDIS_PORT}:6379
+    networks:
+      - rlp
+    volumes:
+      - ./redis_data:/data
 networks:
   rlp:
     driver: bridge
