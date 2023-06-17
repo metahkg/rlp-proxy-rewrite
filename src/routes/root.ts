@@ -52,7 +52,7 @@ export default function (
               return 200;
             }
           },
-          keyGenerator: async (
+          keyGenerator: (
             req: FastifyRequest<{ Querystring: Static<typeof querySchema> }>
           ) => {
             return req.cached ? req.ip : `new${req.ip}`;
@@ -71,7 +71,9 @@ export default function (
           if (!req.query?.url) return done();
           try {
             req.query.url = decodeURIComponent(req.query.url);
-          } catch {}
+          } catch {
+            // do nothing (don't decode) if decode failed
+          }
           req.originalUrl = req.query.url;
           if (
             !["https://", "http://"].some((v) => req.query.url?.startsWith(v))
@@ -96,7 +98,7 @@ export default function (
           const { signature } = req.query;
           const { originalUrl } = req;
           if (config.HMAC_VERIFY && config.HMAC_KEY) {
-            if (!HMACVerify(originalUrl, signature)) {
+            if (!HMACVerify(config.HMAC_KEY, originalUrl, signature)) {
               return res.code(403).send({
                 statusCode: 403,
                 error: "Forbidden",
@@ -124,9 +126,9 @@ export default function (
             });
 
             if (
-              (
-                await Promise.all(ips.map(async (ip) => await isLocalhost(ip)))
-              ).some(Boolean)
+              (await Promise.all(ips.map(async (ip) => isLocalhost(ip)))).some(
+                Boolean
+              )
             ) {
               return res.code(403).send({
                 statusCode: 403,
@@ -209,7 +211,9 @@ export default function (
           image: data.image ?? null,
           ...(data.image &&
             config.HMAC_SIGN &&
-            config.HMAC_KEY && { image_signature: HMACSign(data.image) }),
+            config.HMAC_KEY && {
+              image_signature: HMACSign(config.HMAC_KEY, data.image),
+            }),
           hostname: new URL(url).hostname ?? null,
           siteName: data.publisher ?? null,
         };
