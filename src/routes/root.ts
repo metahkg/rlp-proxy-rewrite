@@ -124,9 +124,9 @@ export default function (
             });
 
             if (
-              (
-                await Promise.all(ips.map(async (ip) => await isLocalhost(ip)))
-              ).some(Boolean)
+              (await Promise.all(ips.map(async (ip) => isLocalhost(ip)))).some(
+                Boolean
+              )
             ) {
               return res.code(403).send({
                 statusCode: 403,
