@@ -71,7 +71,9 @@ export default function (
           if (!req.query?.url) return done();
           try {
             req.query.url = decodeURIComponent(req.query.url);
-          } catch {}
+          } catch {
+            // do nothing (don't decode) if decode failed
+          }
           req.originalUrl = req.query.url;
           if (
             !["https://", "http://"].some((v) => req.query.url?.startsWith(v))

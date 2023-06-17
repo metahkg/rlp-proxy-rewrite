@@ -57,7 +57,9 @@ async function getContent(url: string): Promise<string | null> {
       setTimeout(async () => {
         try {
           await page.close().catch(() => {});
-        } catch {}
+        } catch {
+          // do nothing if failed
+        }
       });
       return html;
     } catch {
@@ -65,10 +67,13 @@ async function getContent(url: string): Promise<string | null> {
         setTimeout(async () => {
           try {
             await page.close().catch(() => {});
-          } catch {}
+          } catch {
+            // do nothing if failed
+          }
         });
+      } finally {
         return null;
-      } catch {}
+      }
     }
   }
 }
