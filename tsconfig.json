@@ -4,7 +4,6 @@
     "esModuleInterop": true,
     "target": "es2017",
     "noImplicitAny": true,
-    "noImplicitUseStrict": true,
     "experimentalDecorators": true,
     "allowJs": true,
     "moduleResolution": "node",

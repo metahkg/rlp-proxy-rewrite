@@ -5,3 +5,4 @@ yarn*.log
 .env
 gl*.json
 docker/data/
+docker/redis_data/

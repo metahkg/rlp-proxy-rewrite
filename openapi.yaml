@@ -27,8 +27,8 @@ info:
     ## Other information
 
     - rate limit:
-      - cached: 200 / 30 seconds
-      - uncached: 5 / 30 seconds
+    - cached: 200 / 30 seconds
+    - uncached: 5 / 30 seconds
     - *Warning*: slower since it uses puppeteer
     - manifest support not yet available, as [metascraper-manifest](https://www.npmjs.com/package/metascraper-manifest) does not have types."
   contact:
@@ -49,6 +49,7 @@ paths:
       description: Get metadata of a url. [Source](https://gitlab.com/rlp-proxy-rewrite/-/blob/dev/src/routes/root.ts)
       parameters:
         - $ref: "#/components/parameters/url"
+        - $ref: "#/components/parameters/signature"
       responses:
         "200":
           $ref: "#/components/responses/metadata"
@@ -63,6 +64,7 @@ paths:
       description: Alias of `getMetadata`
       parameters:
         - $ref: "#/components/parameters/url"
+        - $ref: "#/components/parameters/signature"
       responses:
         "200":
           $ref: "#/components/responses/metadata"
@@ -82,6 +84,15 @@ components:
         type: string
         format: uri
         description: must be a valid https/http URL, UTF-8 encoded
+    signature:
+      in: query
+      name: signature
+      required: false
+      description: HMAC signature of the url. Required if HMAC_VERIFY is true.
+      schema:
+        type: string
+        format: base64
+        description: must be a valid base64-encoded hmac signature of the url
   responses:
     metadata:
       description: Success
@@ -135,6 +146,10 @@ components:
           nullable: true
           description: image url of the site
           example: https://metahkg.org/images/logo.png
+        image_signature:
+          type: string
+          format: base64
+          description: hmac signature of the image url, would be present if `cert/hmac.key` exists
         siteName:
           type: string
           nullable: true

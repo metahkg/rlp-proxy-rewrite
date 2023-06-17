@@ -1,4 +1,9 @@
-import { FastifyInstance, FastifyPluginOptions, FastifyRequest } from "fastify";
+import {
+  FastifyInstance,
+  FastifyPluginOptions,
+  FastifyReply,
+  FastifyRequest,
+} from "fastify";
 import { Type, Static } from "@sinclair/typebox";
 import { cacheCl } from "../lib/mongodb";
 import { APIResponse } from "../types/ApiResponse";
@@ -7,9 +12,11 @@ import { Cache } from "../types/cache";
 import { RateLimitOptions } from "@fastify/rate-limit";
 import { redis } from "../lib/redis";
 import { genkey_redis } from "../lib/genkey_redis";
+import { HMACSign, HMACVerify } from "../lib/hmac";
 import { positiveOrZero } from "../lib/positiveOrZero";
 import dns from "dns";
 import isLocalhost from "is-localhost-ip";
+import { config } from "../lib/config";
 
 export default function (
   fastify: FastifyInstance,
@@ -22,6 +29,11 @@ export default function (
         "^https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]{0,2000})$",
       maxLength: 1000,
     }),
+    ...(config.HMAC_VERIFY &&
+      config.HMAC_KEY && {
+        // base64 sha256, so 44 bytes
+        signature: Type.String({ maxLength: 200 }),
+      }),
   });
   fastify.get(
     "/",
@@ -40,7 +52,7 @@ export default function (
               return 200;
             }
           },
-          keyGenerator: async (
+          keyGenerator: (
             req: FastifyRequest<{ Querystring: Static<typeof querySchema> }>
           ) => {
             return req.cached ? req.ip : `new${req.ip}`;
@@ -49,7 +61,9 @@ export default function (
       },
       preParsing: [
         (
-          req: FastifyRequest<{ Querystring: Static<typeof querySchema> }>,
+          req: FastifyRequest<{
+            Querystring: Static<typeof querySchema>;
+          }> & { originalUrl: string },
           _res,
           _payload,
           done
@@ -57,7 +71,10 @@ export default function (
           if (!req.query?.url) return done();
           try {
             req.query.url = decodeURIComponent(req.query.url);
-          } catch {}
+          } catch {
+            // do nothing (don't decode) if decode failed
+          }
+          req.originalUrl = req.query.url;
           if (
             !["https://", "http://"].some((v) => req.query.url?.startsWith(v))
           ) {
@@ -71,9 +88,31 @@ export default function (
         },
       ],
       preHandler: [
+        (
+          req: FastifyRequest<{ Querystring: Static<typeof querySchema> }> & {
+            originalUrl: string;
+          },
+          res,
+          done
+        ) => {
+          const { signature } = req.query;
+          const { originalUrl } = req;
+          if (config.HMAC_VERIFY && config.HMAC_KEY) {
+            if (!HMACVerify(config.HMAC_KEY, originalUrl, signature)) {
+              return res.code(403).send({
+                statusCode: 403,
+                error: "Forbidden",
+                message: "Invalid HMAC signature.",
+              });
+            }
+          }
+          done();
+        },
         async (
-          req: FastifyRequest<{ Querystring: Static<typeof querySchema> }>,
-          res
+          req: FastifyRequest<{ Querystring: Static<typeof querySchema> }> & {
+            originalUrl: string;
+          },
+          res: FastifyReply
         ) => {
           const { url } = req.query;
           if (!url) return;
@@ -87,9 +126,9 @@ export default function (
             });
 
             if (
-              (
-                await Promise.all(ips.map(async (ip) => await isLocalhost(ip)))
-              ).some(Boolean)
+              (await Promise.all(ips.map((ip) => isLocalhost(ip)))).some(
+                Boolean
+              )
             ) {
               return res.code(403).send({
                 statusCode: 403,
@@ -170,6 +209,11 @@ export default function (
           title: data.title ?? null,
           description: data.description ?? null,
           image: data.image ?? null,
+          ...(data.image &&
+            config.HMAC_SIGN &&
+            config.HMAC_KEY && {
+              image_signature: HMACSign(config.HMAC_KEY, data.image),
+            }),
           hostname: new URL(url).hostname ?? null,
           siteName: data.publisher ?? null,
         };
