@@ -96,7 +96,7 @@ export default function (
           const { signature } = req.query;
           const { originalUrl } = req;
           if (config.HMAC_VERIFY && config.HMAC_KEY) {
-            if (!HMACVerify(originalUrl, signature)) {
+            if (!HMACVerify(config.HMAC_KEY, originalUrl, signature)) {
               return res.code(403).send({
                 statusCode: 403,
                 error: "Forbidden",
@@ -209,7 +209,9 @@ export default function (
           image: data.image ?? null,
           ...(data.image &&
             config.HMAC_SIGN &&
-            config.HMAC_KEY && { image_signature: HMACSign(data.image) }),
+            config.HMAC_KEY && {
+              image_signature: HMACSign(config.HMAC_KEY, data.image),
+            }),
           hostname: new URL(url).hostname ?? null,
           siteName: data.publisher ?? null,
         };

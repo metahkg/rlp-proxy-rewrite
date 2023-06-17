@@ -1,6 +1,5 @@
 import { createHmac } from "crypto";
 import { existsSync, readFileSync } from "fs";
-import { config } from "./config";
 
 export function getHMACKey() {
   if (process.env.HMAC_KEY) {
@@ -16,14 +15,14 @@ export function getHMACKey() {
   return "";
 }
 
-export function HMACSign(data: string) {
-  const hmac = createHmac("sha256", config.HMAC_KEY);
+export function HMACSign(key: string, data: string) {
+  const hmac = createHmac("sha256", key);
   hmac.update(data);
   return hmac.digest("base64url");
 }
 
-export function HMACVerify(data: string, signature: string) {
-  const hmac = createHmac("sha256", config.HMAC_KEY);
+export function HMACVerify(key: string, data: string, signature: string) {
+  const hmac = createHmac("sha256", key);
   hmac.update(data);
   return (
     hmac.digest("base64url") === signature ||
