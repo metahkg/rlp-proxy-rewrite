@@ -126,7 +126,7 @@ export default function (
             });
 
             if (
-              (await Promise.all(ips.map(async (ip) => isLocalhost(ip)))).some(
+              (await Promise.all(ips.map((ip) => isLocalhost(ip)))).some(
                 Boolean
               )
             ) {
