@@ -24,8 +24,5 @@ export function HMACSign(key: string, data: string) {
 export function HMACVerify(key: string, data: string, signature: string) {
   const hmac = createHmac("sha256", key);
   hmac.update(data);
-  return (
-    hmac.digest("base64url") === signature ||
-    hmac.digest("base64") === signature
-  );
+  return hmac.digest("base64url") === signature;
 }
