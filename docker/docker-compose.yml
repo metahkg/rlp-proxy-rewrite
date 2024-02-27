@@ -23,8 +23,11 @@ services:
     tty: true
     networks:
       - rlp
+    volumes:
+      - ../src:/app/src
     depends_on:
       - rlp-mongo
+      - rlp-redis
   rlp-mongo:
     image: mongo:latest
     container_name: rlp-mongo
@@ -38,7 +41,7 @@ services:
       - rlp
     volumes:
       - ./data:/data/db
-  redis:
+  rlp-redis:
     image: redis:7.0-alpine
     container_name: rlp-redis
     command: redis-server --save 10 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
